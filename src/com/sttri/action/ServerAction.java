@@ -2288,7 +2288,9 @@ public class ServerAction extends BaseAction {
 		}
 	}
 	
-	
+	/**
+	 * 保存自评结果
+	 */
 	public void saveUserQuestion(){
 		LOG.info("Executing operation saveUserQuestion");
 		response.setCharacterEncoding("UTf-8");
@@ -2323,4 +2325,36 @@ public class ServerAction extends BaseAction {
 		}
 	}
 	
+	/**
+	 * PC端根据会议室资源账号，加入正在进行的会议室中
+	 */
+	public void enterMeeting(){
+		LOG.info("Executing operation joinMeeting");
+		response.setCharacterEncoding("UTF-8");
+		String account = Util.dealNull(request.getParameter("account"));
+		String pwd = Util.dealNull(request.getParameter("pwd"));
+		String zcode = Util.dealNull(request.getParameter("zcode"));
+		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
+//		TblUser user = (TblUser) JSONObject.toBean(obj.optJSONObject("user"),TblUser.class);
+		if(obj.optInt("code", -2)!=0){
+			JsonUtil.jsonString(response, obj.toString());
+			return;
+		}
+		obj.remove("user");
+		JSONObject ob = new JSONObject();
+		ob.put("code", 0);
+		ob.put("desc", "加入会议成功!");
+		try {
+			LinkedHashMap<String, String> orderBy = new LinkedHashMap<String, String>();
+			orderBy.put("addTime", "desc");
+			List<MeetingRecord> records = this.meetingRecordService.getResultList(" o.zcode =? and o.status=?", orderBy, new Object[]{zcode,1});
+			MeetingRecord meetingRecord = records.get(0);
+			String join_url = meetingRecord.getJoinUrl();
+			ob.put("join_url", join_url);
+			JsonUtil.jsonString(response, ob.toString());
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
 }
