@@ -2335,7 +2335,6 @@ public class ServerAction extends BaseAction {
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String zcode = Util.dealNull(request.getParameter("zcode"));
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
-//		TblUser user = (TblUser) JSONObject.toBean(obj.optJSONObject("user"),TblUser.class);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
 			return;
