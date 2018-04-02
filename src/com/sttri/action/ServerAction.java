@@ -2347,9 +2347,11 @@ public class ServerAction extends BaseAction {
 			LinkedHashMap<String, String> orderBy = new LinkedHashMap<String, String>();
 			orderBy.put("addTime", "desc");
 			List<MeetingRecord> records = this.meetingRecordService.getResultList(" o.zcode =? and o.status=?", orderBy, new Object[]{zcode,1});
-			MeetingRecord meetingRecord = records.get(0);
-			String join_url = meetingRecord.getJoinUrl();
-			ob.put("join_url", join_url);
+			if (records != null && records.size() >0) {
+				MeetingRecord meetingRecord = records.get(0);
+				String join_url = meetingRecord.getJoinUrl();
+				ob.put("join_url", join_url);
+			}
 			JsonUtil.jsonString(response, ob.toString());
 		} catch (Exception e) {
 			// TODO: handle exception
