@@ -2296,11 +2296,16 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTf-8");
 		String devNo = Util.dealNull(request.getParameter("devNo"));
 		String devKey = Util.dealNull(request.getParameter("devKey"));
-		String data = Util.dealNull(request.getParameter("data"));
+		String data = Util.dealNull(request.getParameter("questions"));
 		try {
 			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
 			if(obj.optInt("code", -1)==0){
-				TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
+				JsonUtil.jsonString(response, obj.toString());
+				return;
+			}
+			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
+			obj.remove("dev");
+			if (!"".equals(data)) {
 				JSONArray array = JSONArray.fromObject(data);
 				for (int i = 0; i < array.size(); i++) {
 					JSONObject ob = array.getJSONObject(i);
@@ -2315,10 +2320,11 @@ public class ServerAction extends BaseAction {
 					userQuestion.setAddTime(Util.dateToStr(new Date()));
 					this.userQuestionService.save(userQuestion);
 				}
+				obj.put("code", 0);
+				obj.put("desc", "添加成功");
+				System.out.println(obj.toString());
+				JsonUtil.jsonString(response, obj.toString());
 			}
-			obj.put("code", 0);
-			obj.put("desc", "添加成功!");
-			JsonUtil.jsonString(response, obj.toString());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
