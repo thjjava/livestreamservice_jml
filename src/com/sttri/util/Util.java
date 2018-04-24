@@ -1,10 +1,9 @@
 package com.sttri.util;
-import java.beans.Encoder;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -1737,6 +1736,7 @@ public class Util implements java.io.Serializable {
         long hour = diff % nd / nh;
         // 计算差多少分钟
         long min = diff % nd % nh / nm;
+        System.out.println("min=="+min);
         // 计算差多少秒//输出结果
         long sec = diff % nd % nh % nm / ns;
         return day + "天" + hour + "小时" + min + "分钟" + sec + "秒";
@@ -1794,8 +1794,8 @@ public class Util implements java.io.Serializable {
 		return dateToStr(result);
     }
     
-	public static void main(String[] args) {
-		System.out.println(nextInt(10000, 60000));
+	public static void main(String[] args) throws ParseException {
+		/*System.out.println(nextInt(10000, 60000));
 		System.out.println(getGMTTime("GMT+8"));
 		System.out.println(datediff("2017-09-18 09:30:53", "2017-09-19 09:30:53", "yyyy-MM-dd HH:mm:ss"));
 		String string = "/9z/q2hpQz228esVn7pGNg==";
@@ -1807,7 +1807,9 @@ public class Util implements java.io.Serializable {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		System.out.println(getDatePoor(sdf.parse("2018-04-17 14:07:22"), sdf.parse("2018-04-17 14:06:06")));
 	}
 }
 	

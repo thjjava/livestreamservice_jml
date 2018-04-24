@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 设备录像文件
+ * 璁惧褰曞儚鏂囦欢
  * @author xiaobai
  *
  */

@@ -1,6 +1,0 @@
-[INFO ] 2017-10-27 09:06:27,439  0    [cn.jiguang.common.connection.NativeHttpClient.<init>(NativeHttpClient.java:55)] method:Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
-[INFO ] 2017-10-27 09:06:27,586  147  [cn.jiguang.common.connection.NativeHttpClient.<init>(NativeHttpClient.java:55)] method:Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
-[INFO ] 2017-10-27 09:06:27,589  150  [cn.jiguang.common.connection.NativeHttpClient.<init>(NativeHttpClient.java:55)] method:Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
-[INFO ] 2017-10-27 09:06:27,592  153  [cn.jiguang.common.connection.NativeHttpClient.<init>(NativeHttpClient.java:55)] method:Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
-[WARN ] 2017-10-27 09:06:27,687  248  [cn.jpush.api.push.model.notification.PlatformNotification$Builder.addExtras(PlatformNotification.java:144)] method:Null extras param. Throw away it.
-[INFO ] 2017-10-27 09:06:28,226  787  [com.sttri.util.JPushUtil.sendPush(JPushUtil.java:120)] method:Got result - {"msg_id":2202076027,"sendno":706372891,"statusCode":0}

@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * 用户手机硬件信息
+ * 鐢ㄦ埛鎵嬫満纭欢淇℃伅
  */
 @Entity
 @Table(name = "tbl_mobile")

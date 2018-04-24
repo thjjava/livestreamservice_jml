@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="livestreamservice">
-        <wb-resource deploy-path="/" source-path="/WebRoot"/>
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="livestreamservice_jml">
+        <wb-resource deploy-path="/" source-path="/WebRoot" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="/livestreamservice"/>
-        <property name="java-output-path" value="/livestreamservice/WebRoot/WEB-INF/classes"/>
+        <property name="java-output-path" value="/livestreamservice_jml/WebRoot/WEB-INF/classes"/>
+        <property name="context-root" value="livestreamservice"/>
     </wb-module>
 </project-modules>

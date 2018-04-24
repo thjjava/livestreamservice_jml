@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * 流媒体服务器
+ * 娴佸獟浣撴湇鍔″櫒
  * @author xiaobai
  *
  */

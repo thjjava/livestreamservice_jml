@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * Â¼Ïñ
+ * å½•åƒ
  * @author xiaobai
  *
  */

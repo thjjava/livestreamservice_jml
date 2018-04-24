@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * »áÒéÁĞ±í
+ * ä¼šè®®åˆ—è¡¨
  * @author thj
  *
  */
@@ -22,9 +22,9 @@ public class MeetingRecord implements java.io.Serializable {
 	private String meetingId;
 	private String meetingUuid;
 	private String topic;
-	private Integer participants;//²Î»áÈËÊı
-	private Integer status;//»áÒéÊÒ×´Ì¬
-	private String duration;//»áÒéÊ±³¤
+	private Integer participants;//å‚ä¼šäººæ•°
+	private Integer status;//ä¼šè®®å®¤çŠ¶æ€
+	private String duration;//ä¼šè®®æ—¶é•¿
 	private String startTime;
 	private String endTime;
 	private String startUrl;

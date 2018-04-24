@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * »áÒé×ÊÔ´±í
+ * ä¼šè®®èµ„æºè¡¨
  * @author thj
  *
  */
@@ -20,14 +20,14 @@ public class MeetingResource implements java.io.Serializable {
 	private String account;
 	private transient String password;
 	private String zcode;
-	private Integer participants;//ÔÊĞíÕÙ¼¯»áÒé·½Êı
-	private Integer status;//status:»áÒé×´Ì¬  0-ÒÑ½áÊø 1-Õı½øĞĞ
+	private Integer participants;//å…è®¸å¬é›†ä¼šè®®æ–¹æ•°
+	private Integer status;//status:ä¼šè®®çŠ¶æ€  0-å·²ç»“æŸ 1-æ­£è¿›è¡Œ
 	private String usedAccount;
 	private String usedTime;
 	private String addTime;
 	private String editTime;
 	private String nickName;
-	private Integer isMeeting;//ÊÇ·ñÕıÔÚ¿ª»á  0-·ñ 1-ÊÇ
+	private Integer isMeeting;//æ˜¯å¦æ­£åœ¨å¼€ä¼š  0-å¦ 1-æ˜¯
 	
 	public MeetingResource() {
 	}

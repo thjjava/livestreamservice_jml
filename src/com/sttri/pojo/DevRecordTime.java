@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * Ö±²¥Ê±³¤
+ * ç›´æ’­æ—¶é•¿
  *
  */
 @Entity

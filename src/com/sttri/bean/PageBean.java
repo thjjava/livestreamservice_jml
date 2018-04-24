@@ -6,7 +6,6 @@ import java.util.List;
  * 分页参数
  * @author wdq
  * */
-@SuppressWarnings("unchecked")
 public class PageBean {
 	private int AllSize;  //总条数
 	private int pageNo ;  //开始条数  下标
@@ -28,7 +27,7 @@ public class PageBean {
 	/**
 	 * 计算总页数
 	 * */
-	public static int retunAllSize(List list){
+	public static int retunAllSize(@SuppressWarnings("rawtypes") List list){
 		int AllSize=0;
 		if(list !=null){
 			AllSize=list.size();

@@ -153,7 +153,7 @@ public class MeetingApiUtil {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getUser("15369977606@189.cn"));
+		System.out.println(getUser("jmlr1@jml.com"));
 		JSONObject object = getUser("xtdx_pc@jml.com");
 		System.out.println(object.toString());
 //		System.out.println(createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13"));//type=1,开始时间可以为空

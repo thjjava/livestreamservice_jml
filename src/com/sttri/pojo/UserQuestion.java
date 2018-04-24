@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * ÓÃ»§³¿»á×ÔÆÀ±í
+ * ç”¨æˆ·æ™¨ä¼šè‡ªè¯„è¡¨
  */
 @Entity
 @Table(name = "user_question")
@@ -19,10 +19,15 @@ public class UserQuestion implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private String id;
-	private TblUser user;
+	private String comId;
 	private TblDev dev;
-	private TblQuestion question;
-	private String answer;
+	private Integer answer1;
+	private Integer answer2;
+	private Integer answer3;
+	private Integer answer4;
+	private Integer answer5;
+	private Integer score;
+	private Integer timeLen;
 	private String addTime;
 	
 	public UserQuestion() {
@@ -38,15 +43,13 @@ public class UserQuestion implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne
-	@JoinColumn(name="UserId")
-	@NotFound(action=NotFoundAction.IGNORE)
-	public TblUser getUser() {
-		return user;
+	@Column(name = "ComId", length = 50)
+	public String getComId() {
+		return this.comId;
 	}
 
-	public void setUser(TblUser user) {
-		this.user = user;
+	public void setComId(String comId) {
+		this.comId = comId;
 	}
 	
 	@ManyToOne
@@ -60,26 +63,69 @@ public class UserQuestion implements java.io.Serializable {
 		this.dev = dev;
 	}
 	
-	@ManyToOne
-	@JoinColumn(name="QId")
-	@NotFound(action=NotFoundAction.IGNORE)
-	public TblQuestion getQuestion() {
-		return question;
+	@Column(name = "Answer1")
+	public Integer getAnswer1() {
+		return answer1;
 	}
 
-	public void setQuestion(TblQuestion question) {
-		this.question = question;
+	public void setAnswer1(Integer answer1) {
+		this.answer1 = answer1;
+	}
+
+	@Column(name = "Answer2")
+	public Integer getAnswer2() {
+		return answer2;
+	}
+
+	public void setAnswer2(Integer answer2) {
+		this.answer2 = answer2;
 	}
 	
-	@Column(name = "Answer", length = 200)
-	public String getAnswer() {
-		return answer;
+	@Column(name = "Answer3")
+	public Integer getAnswer3() {
+		return answer3;
 	}
 
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public void setAnswer3(Integer answer3) {
+		this.answer3 = answer3;
+	}
+	
+	@Column(name = "Answer4")
+	public Integer getAnswer4() {
+		return answer4;
 	}
 
+	public void setAnswer4(Integer answer4) {
+		this.answer4 = answer4;
+	}
+	
+	@Column(name = "Answer5")
+	public Integer getAnswer5() {
+		return answer5;
+	}
+
+	public void setAnswer5(Integer answer5) {
+		this.answer5 = answer5;
+	}
+	
+	@Column(name = "Score")
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+	
+	@Column(name = "TimeLen")
+	public Integer getTimeLen() {
+		return timeLen;
+	}
+
+	public void setTimeLen(Integer timeLen) {
+		this.timeLen = timeLen;
+	}
+	
 	@Column(name = "AddTime", length = 20)
 	public String getAddTime() {
 		return addTime;
@@ -88,5 +134,4 @@ public class UserQuestion implements java.io.Serializable {
 	public void setAddTime(String addTime) {
 		this.addTime = addTime;
 	}
-
 }

@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * 设备
+ * 璁惧
  * @author xiaobai
  *
  */
@@ -43,9 +43,9 @@ public class TblDev implements java.io.Serializable {
 	private String editTime;
 	private String hlsUrl;
 	private Integer isTransCode;
-	private String subPublishUrl;//转码后的地址
-	private Integer fullFlag;//今麦郎项目，三个小窗口中某个窗口是否全屏
-	private String push_Registration_Id;//今麦郎项目，极光推送设备注册ID
+	private String subPublishUrl;//杞爜鍚庣殑鍦板潃
+	private Integer fullFlag;//浠婇害閮庨」鐩紝涓変釜灏忕獥鍙ｄ腑鏌愪釜绐楀彛鏄惁鍏ㄥ睆
+	private String push_Registration_Id;//浠婇害閮庨」鐩紝鏋佸厜鎺ㄩ�佽澶囨敞鍐孖D
 	
 	public TblDev() {
 	}

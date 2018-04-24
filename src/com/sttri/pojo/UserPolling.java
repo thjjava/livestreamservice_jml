@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * ÓÃ»§ÂÖÑ¯²ßÂÔ
+ * ç”¨æˆ·è½®è¯¢ç­–ç•¥
  */
 @Entity
 @Table(name = "user_polling")

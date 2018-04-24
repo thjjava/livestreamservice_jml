@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+
 import com.sttri.bean.PageView;
 import com.sttri.bean.QueryResult;
 import com.sttri.pojo.CompanyGroup;
@@ -2283,7 +2284,6 @@ public class ServerAction extends BaseAction {
 			System.out.println(ob.toString());
 			JsonUtil.jsonString(response, ob.toString());
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 	}
@@ -2296,37 +2296,64 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTf-8");
 		String devNo = Util.dealNull(request.getParameter("devNo"));
 		String devKey = Util.dealNull(request.getParameter("devKey"));
-		String data = Util.dealNull(request.getParameter("questions"));
+		String answer1 = Util.dealNull(request.getParameter("answer1"));
+		String answer2 = Util.dealNull(request.getParameter("answer2"));
+		String answer3 = Util.dealNull(request.getParameter("answer3"));
+		String answer4 = Util.dealNull(request.getParameter("answer4"));
+		String answer5 = Util.dealNull(request.getParameter("answer5"));
 		try {
 			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
-			if(obj.optInt("code", -1)==0){
+			if(obj.optInt("code", -1)!=0){
 				JsonUtil.jsonString(response, obj.toString());
 				return;
 			}
 			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
 			obj.remove("dev");
-			if (!"".equals(data)) {
-				JSONArray array = JSONArray.fromObject(data);
-				for (int i = 0; i < array.size(); i++) {
-					JSONObject ob = array.getJSONObject(i);
-					String id = ob.getString("id");
-					String answer = ob.getString("answer");
-					TblQuestion question = this.questionService.getById(id);
-					UserQuestion userQuestion = new UserQuestion();
-					userQuestion.setId(Util.getUUID(6));
-					userQuestion.setDev(dev);
-					userQuestion.setQuestion(question);
-					userQuestion.setAnswer(answer);
-					userQuestion.setAddTime(Util.dateToStr(new Date()));
-					this.userQuestionService.save(userQuestion);
+			List<UserQuestion> list = this.userQuestionService.getResultList(" o.dev.id=?", null, new java.lang.Object[]{dev.getId()});
+			UserQuestion userQuestion= null;
+			if (list != null && list.size() >0) {
+				userQuestion = list.get(0);
+				userQuestion.setComId(dev.getCompany().getId());
+				userQuestion.setDev(dev);
+				userQuestion.setAnswer1(Integer.parseInt(answer1));
+				userQuestion.setAnswer2(Integer.parseInt(answer2));
+				userQuestion.setAnswer3(Integer.parseInt(answer3));
+				userQuestion.setAnswer4(Integer.parseInt(answer4));
+				userQuestion.setAnswer5(Integer.parseInt(answer5));
+				int score = 0;
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+				if (Integer.parseInt(answer5)>=2) {
+					score += 1;
 				}
-				obj.put("code", 0);
-				obj.put("desc", "添加成功");
-				System.out.println(obj.toString());
-				JsonUtil.jsonString(response, obj.toString());
+				if (userQuestion.getTimeLen() >= 15) {
+					score += 1;
+				}
+				userQuestion.setScore(score);
+				this.userQuestionService.update(userQuestion);
+			}else {
+				userQuestion = new UserQuestion();
+				userQuestion.setId(Util.getUUID(6));
+				userQuestion.setComId(dev.getCompany().getId());
+				userQuestion.setDev(dev);
+				userQuestion.setAnswer1(Integer.parseInt(answer1));
+				userQuestion.setAnswer2(Integer.parseInt(answer2));
+				userQuestion.setAnswer3(Integer.parseInt(answer3));
+				userQuestion.setAnswer4(Integer.parseInt(answer4));
+				userQuestion.setAnswer5(Integer.parseInt(answer5));
+				int score = 0;
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+				if (Integer.parseInt(answer5)>=2) {
+					score += 1;
+				}
+				userQuestion.setScore(score);
+				userQuestion.setAddTime(Util.dateToStr(new Date()));
+				this.userQuestionService.save(userQuestion);
 			}
+			obj.put("code", 0);
+			obj.put("desc", "添加成功");
+			System.out.println(obj.toString());
+			JsonUtil.jsonString(response, obj.toString());
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 	}
@@ -2335,7 +2362,7 @@ public class ServerAction extends BaseAction {
 	 * PC端根据会议室资源账号，加入正在进行的会议室中
 	 */
 	public void enterMeeting(){
-		LOG.info("Executing operation joinMeeting");
+		LOG.info("Executing operation enterMeeting");
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
@@ -2360,7 +2387,6 @@ public class ServerAction extends BaseAction {
 			}
 			JsonUtil.jsonString(response, ob.toString());
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 	}

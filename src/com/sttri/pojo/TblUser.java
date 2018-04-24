@@ -12,7 +12,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 /**
- * 用户
+ * 鐢ㄦ埛
  * @author thj
  *
  */
@@ -35,7 +35,7 @@ public class TblUser implements java.io.Serializable {
 	private String zcode;
 	private String email;
 	private String userName;
-	private Integer participants;//允许召集会议方数
+	private Integer participants;//鍏佽鍙泦浼氳鏂规暟
 	
 	public TblUser() {
 	}

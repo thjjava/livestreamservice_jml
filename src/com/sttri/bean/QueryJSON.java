@@ -4,7 +4,7 @@ import java.util.List;
 /**
  * 用于生成 JSON
  * */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class QueryJSON {
 	private long total;
 	private List rows;

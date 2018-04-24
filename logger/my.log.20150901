@@ -1,9 +1,0 @@
-[INFO ] 2015-07-04 21:09:22,434  1    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:26:53,983  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:27:28,666  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:27:38,025  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:28:04,234  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:28:33,781  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:28:58,039  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:29:21,815  0    [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string
-[INFO ] 2015-07-04 21:29:21,947  132  [net.sf.json.xml.XMLSerializer.getType(XMLSerializer.java:736)] method:Using default type string

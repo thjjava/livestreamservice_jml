@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * ∆Û“µ
+ * ‰ºÅ‰∏ö
  * @author xiaobai
  *
  */
