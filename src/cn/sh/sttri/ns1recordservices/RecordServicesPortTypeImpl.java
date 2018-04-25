@@ -21,7 +21,6 @@ import com.sttri.pojo.DevRecordFile;
 import com.sttri.pojo.DevRecordTime;
 import com.sttri.pojo.MediaServer;
 import com.sttri.pojo.TblDev;
-import com.sttri.pojo.UserQuestion;
 import com.sttri.service.IDevLogService;
 import com.sttri.service.IDevRecordFileService;
 import com.sttri.service.IDevRecordService;
@@ -236,17 +235,6 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 			devRecordTime.setTimeLen(timeLen);
 			devRecordTime.setStatus(0);
 			this.devRecordTimeService.update(devRecordTime);
-			
-			//更新用户会议质量信息
-			UserQuestion userQuestion = new UserQuestion();
-			userQuestion.setId(Util.getUUID(6));
-			userQuestion.setDev(devRecordTime.getDev());
-			userQuestion.setComId(devRecordTime.getDev().getCompany().getId());
-			int liveTimeLen = (new Long(Util.datediff(recordStartTime, recordEndTime, "yyyy-MM-dd HH:mm:ss")).intValue())/(1000*60);
-			userQuestion.setTimeLen(liveTimeLen);
-			userQuestion.setAddTime(Util.dateToStr(new Date()));
-			this.userQuestionService.save(userQuestion);
-			
 		}
 	}
 }

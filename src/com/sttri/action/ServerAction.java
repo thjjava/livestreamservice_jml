@@ -2301,6 +2301,7 @@ public class ServerAction extends BaseAction {
 		String answer3 = Util.dealNull(request.getParameter("answer3"));
 		String answer4 = Util.dealNull(request.getParameter("answer4"));
 		String answer5 = Util.dealNull(request.getParameter("answer5"));
+		String timeLen = Util.dealNull(request.getParameter("timeLen"));
 		try {
 			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
 			if(obj.optInt("code", -1)!=0){
@@ -2309,46 +2310,30 @@ public class ServerAction extends BaseAction {
 			}
 			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
 			obj.remove("dev");
-			List<UserQuestion> list = this.userQuestionService.getResultList(" o.dev.id=?", null, new java.lang.Object[]{dev.getId()});
-			UserQuestion userQuestion= null;
-			if (list != null && list.size() >0) {
-				userQuestion = list.get(0);
-				userQuestion.setComId(dev.getCompany().getId());
-				userQuestion.setDev(dev);
-				userQuestion.setAnswer1(Integer.parseInt(answer1));
-				userQuestion.setAnswer2(Integer.parseInt(answer2));
-				userQuestion.setAnswer3(Integer.parseInt(answer3));
-				userQuestion.setAnswer4(Integer.parseInt(answer4));
-				userQuestion.setAnswer5(Integer.parseInt(answer5));
-				int score = 0;
-				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
-				if (Integer.parseInt(answer5)>=2) {
-					score += 1;
-				}
-				if (userQuestion.getTimeLen() >= 15) {
-					score += 1;
-				}
-				userQuestion.setScore(score);
-				this.userQuestionService.update(userQuestion);
-			}else {
-				userQuestion = new UserQuestion();
-				userQuestion.setId(Util.getUUID(6));
-				userQuestion.setComId(dev.getCompany().getId());
-				userQuestion.setDev(dev);
-				userQuestion.setAnswer1(Integer.parseInt(answer1));
-				userQuestion.setAnswer2(Integer.parseInt(answer2));
-				userQuestion.setAnswer3(Integer.parseInt(answer3));
-				userQuestion.setAnswer4(Integer.parseInt(answer4));
-				userQuestion.setAnswer5(Integer.parseInt(answer5));
-				int score = 0;
-				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
-				if (Integer.parseInt(answer5)>=2) {
-					score += 1;
-				}
-				userQuestion.setScore(score);
-				userQuestion.setAddTime(Util.dateToStr(new Date()));
-				this.userQuestionService.save(userQuestion);
+			
+			UserQuestion userQuestion = new UserQuestion();
+			userQuestion.setId(Util.getUUID(6));
+			userQuestion.setComId(dev.getCompany().getId());
+			userQuestion.setDev(dev);
+			userQuestion.setAnswer1(Integer.parseInt(answer1));
+			userQuestion.setAnswer2(Integer.parseInt(answer2));
+			userQuestion.setAnswer3(Integer.parseInt(answer3));
+			userQuestion.setAnswer4(Integer.parseInt(answer4));
+			userQuestion.setAnswer5(Integer.parseInt(answer5));
+			int score = 0;
+			score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+			//参会人数大于等于2算1分)
+			if (Integer.parseInt(answer5)>=2) {
+				score += 1;
 			}
+			//开会时长大于等于15分钟算1分
+			if (Integer.parseInt(timeLen) >= (15*60)) {
+				score += 1;
+			}
+			userQuestion.setTimeLen(Integer.parseInt(timeLen)/60);
+			userQuestion.setScore(score);
+			userQuestion.setAddTime(Util.dateToStr(new Date()));
+			this.userQuestionService.save(userQuestion);
 			obj.put("code", 0);
 			obj.put("desc", "添加成功");
 			System.out.println(obj.toString());

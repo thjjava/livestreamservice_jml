@@ -1736,7 +1736,6 @@ public class Util implements java.io.Serializable {
         long hour = diff % nd / nh;
         // 计算差多少分钟
         long min = diff % nd % nh / nm;
-        System.out.println("min=="+min);
         // 计算差多少秒//输出结果
         long sec = diff % nd % nh % nm / ns;
         return day + "天" + hour + "小时" + min + "分钟" + sec + "秒";
