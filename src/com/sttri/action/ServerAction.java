@@ -2,6 +2,7 @@ package com.sttri.action;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -21,6 +22,8 @@ import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+
 
 
 
@@ -2302,6 +2305,7 @@ public class ServerAction extends BaseAction {
 		String answer4 = Util.dealNull(request.getParameter("answer4"));
 		String answer5 = Util.dealNull(request.getParameter("answer5"));
 		String timeLen = Util.dealNull(request.getParameter("timeLen"));
+		System.out.println("**saveQuestione**:"+devNo+"="+timeLen+"&&"+Util.dateToStr(new Date()));
 		try {
 			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
 			if(obj.optInt("code", -1)!=0){
@@ -2310,33 +2314,66 @@ public class ServerAction extends BaseAction {
 			}
 			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
 			obj.remove("dev");
-			
-			UserQuestion userQuestion = new UserQuestion();
-			userQuestion.setId(Util.getUUID(6));
-			userQuestion.setComId(dev.getCompany().getId());
-			userQuestion.setDev(dev);
-			userQuestion.setAnswer1(Integer.parseInt(answer1));
-			userQuestion.setAnswer2(Integer.parseInt(answer2));
-			userQuestion.setAnswer3(Integer.parseInt(answer3));
-			userQuestion.setAnswer4(Integer.parseInt(answer4));
-			userQuestion.setAnswer5(Integer.parseInt(answer5));
-			int score = 0;
-			score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
-			//参会人数大于等于2算1分)
-			if (Integer.parseInt(answer5)>=2) {
-				score += 1;
+			if (Integer.parseInt(timeLen) > (24*60*60)) {//直播时长数值超过24小时，判断为非法数据，不保存数据库
+				obj.put("code", 9);
+				obj.put("desc", "直播时长数据有问题,添加失败!");
+				JsonUtil.jsonString(response, obj.toString());
+				return;
 			}
-			//开会时长大于等于15分钟算1分
-			if (Integer.parseInt(timeLen) >= (15*60)) {
-				score += 1;
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String date = sdf.format(new Date());
+			List<UserQuestion> list = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+			if (list != null && list.size() >0) {
+				UserQuestion userQuestion = list.get(0);
+				userQuestion.setAnswer1(Integer.parseInt(answer1));
+				userQuestion.setAnswer2(Integer.parseInt(answer2));
+				userQuestion.setAnswer3(Integer.parseInt(answer3));
+				userQuestion.setAnswer4(Integer.parseInt(answer4));
+				userQuestion.setAnswer5(Integer.parseInt(answer5));
+				int score = 0;
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+				//参会人数大于等于2算1分
+				if (Integer.parseInt(answer5)>=2) {
+					score += 1;
+				}
+				int liveTimeLen = userQuestion.getTimeLen();
+				liveTimeLen += Integer.parseInt(timeLen);
+				//开会时长大于等于15分钟算1分
+				if (liveTimeLen >= (15*60)) {
+					score += 1;
+				}
+				userQuestion.setTimeLen(liveTimeLen);
+				userQuestion.setScore(score);
+				userQuestion.setAddTime(Util.dateToStr(new Date()));
+				this.userQuestionService.update(userQuestion);
+			}else {
+				UserQuestion userQuestion = new UserQuestion();
+				userQuestion.setId(Util.getUUID(6));
+				userQuestion.setComId(dev.getCompany().getId());
+				userQuestion.setDev(dev);
+				userQuestion.setAnswer1(Integer.parseInt(answer1));
+				userQuestion.setAnswer2(Integer.parseInt(answer2));
+				userQuestion.setAnswer3(Integer.parseInt(answer3));
+				userQuestion.setAnswer4(Integer.parseInt(answer4));
+				userQuestion.setAnswer5(Integer.parseInt(answer5));
+				int score = 0;
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+				//参会人数大于等于2算1分
+				if (Integer.parseInt(answer5)>=2) {
+					score += 1;
+				}
+				//开会时长大于等于15分钟算1分
+				if (Integer.parseInt(timeLen) >= (15*60)) {
+					score += 1;
+				}
+				userQuestion.setTimeLen(Integer.parseInt(timeLen));
+				userQuestion.setScore(score);
+				userQuestion.setAddTime(Util.dateToStr(new Date()));
+				this.userQuestionService.save(userQuestion);
 			}
-			userQuestion.setTimeLen(Integer.parseInt(timeLen)/60);
-			userQuestion.setScore(score);
-			userQuestion.setAddTime(Util.dateToStr(new Date()));
-			this.userQuestionService.save(userQuestion);
 			obj.put("code", 0);
 			obj.put("desc", "添加成功");
-			System.out.println(obj.toString());
 			JsonUtil.jsonString(response, obj.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
