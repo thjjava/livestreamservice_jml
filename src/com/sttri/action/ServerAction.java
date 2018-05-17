@@ -27,6 +27,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
+
+
+
+
 import com.sttri.bean.PageView;
 import com.sttri.bean.QueryResult;
 import com.sttri.pojo.CompanyGroup;
@@ -34,6 +38,7 @@ import com.sttri.pojo.DevGood;
 import com.sttri.pojo.DevLog;
 import com.sttri.pojo.DevRecord;
 import com.sttri.pojo.DevRecordFile;
+import com.sttri.pojo.DevRecordTime;
 import com.sttri.pojo.DevView;
 import com.sttri.pojo.MediaServer;
 import com.sttri.pojo.MeetingRecord;
@@ -55,6 +60,7 @@ import com.sttri.service.IDevGoodService;
 import com.sttri.service.IDevLogService;
 import com.sttri.service.IDevRecordFileService;
 import com.sttri.service.IDevRecordService;
+import com.sttri.service.IDevRecordTimeService;
 import com.sttri.service.IDevService;
 import com.sttri.service.IDevViewService;
 import com.sttri.service.IMediaServerService;
@@ -125,6 +131,8 @@ public class ServerAction extends BaseAction {
 	private IQuestionService questionService;
 	@Autowired
 	private IUserQuestionService userQuestionService;
+	@Autowired
+	private IDevRecordTimeService devRecordTimeService;
 	
 	/**
 	 * pc客户端
@@ -2337,8 +2345,14 @@ public class ServerAction extends BaseAction {
 				if (Integer.parseInt(answer5)>=2) {
 					score += 1;
 				}
-				int liveTimeLen = userQuestion.getTimeLen();
-				liveTimeLen += Integer.parseInt(timeLen);
+				/*
+				 * 修改日期：2018-5-8 
+				 * 修改原因：时长改为直接从直播时长表中获取
+				 * int liveTimeLen = userQuestion.getTimeLen();
+				 * liveTimeLen += Integer.parseInt(timeLen);
+				 */
+				List<DevRecordTime> drt = this.devRecordTimeService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+				int liveTimeLen = getTimeLen(drt);
 				//开会时长大于等于15分钟算1分
 				if (liveTimeLen >= (15*60)) {
 					score += 1;
@@ -2363,11 +2377,13 @@ public class ServerAction extends BaseAction {
 				if (Integer.parseInt(answer5)>=2) {
 					score += 1;
 				}
+				List<DevRecordTime> drt = this.devRecordTimeService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+				int liveTimeLen = getTimeLen(drt);
 				//开会时长大于等于15分钟算1分
-				if (Integer.parseInt(timeLen) >= (15*60)) {
+				if (liveTimeLen >= (15*60)) {
 					score += 1;
 				}
-				userQuestion.setTimeLen(Integer.parseInt(timeLen));
+				userQuestion.setTimeLen(liveTimeLen);
 				userQuestion.setScore(score);
 				userQuestion.setAddTime(Util.dateToStr(new Date()));
 				this.userQuestionService.save(userQuestion);
@@ -2380,6 +2396,28 @@ public class ServerAction extends BaseAction {
 		}
 	}
 	
+	/**
+	 * 时间字符串转化为具体秒数，recordTime="0天0小时10分钟31秒"
+	 * @param list
+	 * @return 
+	 */
+	public int getTimeLen(List<DevRecordTime> list){
+		int timeLen =0;
+		if (list != null && list.size() > 0) {
+			for (DevRecordTime devRecordTime : list) {
+				String recordTime = devRecordTime.getTimeLen();
+				String[] s1 = recordTime.split("天");
+				timeLen += Integer.parseInt(s1[0])*24*60*60;//天->秒
+				String[] s2 = s1[1].split("小时");
+				timeLen += Integer.parseInt(s2[0])*60*60;//小时->秒
+				String[] s3 = s2[1].split("分钟");
+				timeLen += Integer.parseInt(s3[0])*60;//分钟->秒
+				String[] s4 = s3[1].split("秒");
+				timeLen += Integer.parseInt(s4[0]);
+			}
+		}
+		return timeLen;
+	}
 	/**
 	 * PC端根据会议室资源账号，加入正在进行的会议室中
 	 */

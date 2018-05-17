@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Formula;
+
 /**
  * 会议资源表
  * @author thj
@@ -28,6 +30,7 @@ public class MeetingResource implements java.io.Serializable {
 	private String editTime;
 	private String nickName;
 	private Integer isMeeting;//是否正在开会  0-否 1-是
+	private String usedName;
 	
 	public MeetingResource() {
 	}
@@ -149,4 +152,14 @@ public class MeetingResource implements java.io.Serializable {
 	public void setIsMeeting(Integer isMeeting) {
 		this.isMeeting = isMeeting;
 	}
+
+	@Formula("(select u.userName from tbl_user u where u.account = usedAccount)")
+	public String getUsedName() {
+		return usedName;
+	}
+
+	public void setUsedName(String usedName) {
+		this.usedName = usedName;
+	}
+	
 }
