@@ -64,6 +64,6 @@ public class MD5Util {
 
     public static void main(String[] args) {
 
-        System.out.println(MD5Code("calib"));
+        System.out.println(MD5Code("calib").toUpperCase());
     }
 }

@@ -288,9 +288,10 @@ public class DevServiceImpl implements IDevService {
 		devRecordTime.setDev(dev);
 		devRecordTime.setRecordStartTime(Util.dateToStr(new Date()));
 		devRecordTime.setRecordEndTime("");
-		devRecordTime.setTimeLen("0");
+		devRecordTime.setTimeLen("0天0小时0分钟0秒");
 		devRecordTime.setStatus(1);
 		devRecordTime.setAddTime(Util.dateToStr(new Date()));
+		devRecordTime.setRecordTaskNo(dev.getDrId());
 		this.devRecordTimeService.save(devRecordTime);
 	}
 

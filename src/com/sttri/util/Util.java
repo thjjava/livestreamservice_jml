@@ -1809,6 +1809,19 @@ public class Util implements java.io.Serializable {
 		}*/
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(getDatePoor(sdf.parse("2018-04-17 14:07:22"), sdf.parse("2018-04-17 14:06:06")));
+		
+		System.out.println(datediff("2017-09-18 09:30:53", "2017-09-18 09:31:53", "yyyy-MM-dd HH:mm:ss"));
+		
+		String recordEndTime = dateToStr(new Date());
+		System.out.println(recordEndTime);
+	    Date endDate=sdf.parse(recordEndTime);
+	    Calendar c = Calendar.getInstance();
+	    c.setTime(new Date());
+	    c.add(Calendar.SECOND, -90);
+	    endDate = c.getTime();
+	    System.out.println(dateToStr(endDate));
+	    System.out.println(getDatePoor(endDate, sdf.parse("2018-05-29 10:20:00")));
+	    System.out.println(recordEndTime.substring(0,10));
 	}
 }
 	

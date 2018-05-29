@@ -147,6 +147,7 @@ public class ServerAction extends BaseAction {
 		String sourceType = Util.dealNull(request.getParameter("sourceType"));
 		String conType = Util.dealNull(request.getParameter("conType"));
 		String conVer = Util.dealNull(request.getParameter("conVer"));
+		LOG.info(account+" login on "+ Util.dateToStr(new Date()));
 		try {
 			JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 			//获取该用户的权限
@@ -293,10 +294,11 @@ public class ServerAction extends BaseAction {
 	@RequestMapping()
 	public String getDevList(){
 		LOG.info("Executing operation getDevList");
-		System.out.println(request.getMethod());
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" getDevList on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code")==0){
 			TblUser user = (TblUser)JSONObject.toBean(obj.optJSONObject("user"), TblUser.class);
@@ -338,6 +340,8 @@ public class ServerAction extends BaseAction {
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String data = Util.dealNull(request.getParameter("data"));//设备在线状态
 		String groups = Util.dealNull(request.getParameter("groups"));//组织在线数统计
+		
+		LOG.info(account+" refreshOnline on "+ Util.dateToStr(new Date()));
 		try {
 			JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 			TblUser user = (TblUser)JSONObject.toBean(obj.optJSONObject("user"), TblUser.class);
@@ -435,6 +439,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" group on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code",-1)!=0){
 			JsonUtil.jsonString(response, "[]");
@@ -529,6 +535,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" getUrl on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		obj.put("url", "");
 		if(obj.optInt("code", -2)!=0){
@@ -562,6 +570,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" getUrl1 on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		obj.put("url", "");
 		if(obj.optInt("code", -2)!=0){
@@ -592,6 +602,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" getRecordList on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -667,6 +679,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" getRecordList1 on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -745,6 +759,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" getReordListByTaskNo on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -813,6 +829,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" removeRecord on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -946,6 +964,8 @@ public class ServerAction extends BaseAction {
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String devNo = Util.dealNull(request.getParameter("devNo"));
+		LOG.info(account+" getHlsUrl on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		obj.put("hlsurl", "");
 		if(obj.optInt("code", -2)!=0){
@@ -989,6 +1009,9 @@ public class ServerAction extends BaseAction {
 		String sourceType = Util.dealNull(request.getParameter("sourceType"));
 		String conType = Util.dealNull(request.getParameter("conType"));
 		String conVer = Util.dealNull(request.getParameter("conVer"));
+		
+		LOG.info(devNo+" getLeaderDevList on "+ Util.dateToStr(new Date()));
+		
 		JSONArray array = new JSONArray();
 		JSONObject object = new JSONObject();
 		object.put("result", -1);
@@ -1095,6 +1118,8 @@ public class ServerAction extends BaseAction {
 		String sourceType = Util.dealNull(request.getParameter("sourceType"));
 		String conType = Util.dealNull(request.getParameter("conType"));
 		String conVer = Util.dealNull(request.getParameter("conVer"));
+		LOG.info(devNo+" refreshLeaderDevList on "+ Util.dateToStr(new Date()));
+		
 		JSONArray array = new JSONArray();
 		JSONObject object = new JSONObject();
 		object.put("result", -1);
@@ -1227,6 +1252,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String devNo = Util.dealNull(request.getParameter("devNo"));
 		String devKey = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(devNo+" setFull on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject ob = new JSONObject();
 			ob.put("code", 1);
@@ -1254,6 +1281,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String devNo = Util.dealNull(request.getParameter("devNo"));
 		String devKey = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(devNo+" closeFull on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject ob = new JSONObject();
 			ob.put("code", 1);
@@ -1281,6 +1310,8 @@ public class ServerAction extends BaseAction {
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
+		LOG.info(account+" closeFull on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 			if(obj.optInt("code")==0){
@@ -1322,6 +1353,8 @@ public class ServerAction extends BaseAction {
 		String pollingName = Util.dealNull(request.getParameter("pollingName"));
 		String timeLen = Util.dealNull(request.getParameter("timeLen"));
 		String devList = Util.dealNull(request.getParameter("devList"));
+		LOG.info(account+" addPolling on "+ Util.dateToStr(new Date()));
+		
 		JSONObject ob = new JSONObject();
 		try {
 			JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
@@ -1361,6 +1394,8 @@ public class ServerAction extends BaseAction {
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String pollingId = Util.dealNull(request.getParameter("pollingId"));
+		LOG.info(account+" removePolling on "+ Util.dateToStr(new Date()));
+		
 		JSONObject ob = new JSONObject();
 		try {
 			JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
@@ -1393,10 +1428,17 @@ public class ServerAction extends BaseAction {
 		String devNo = Util.dealNull(request.getParameter("devNo"));
 		String oldPwd = Util.dealNull(request.getParameter("oldPwd"));
 		String newPwd = Util.dealNull(request.getParameter("newPwd"));
+		LOG.info(devNo+" modifyPwd on "+Util.dateToStr(new Date()));
 		try {
 			JSONObject ob = new JSONObject();
 			ob.put("code", 1);
 			ob.put("desc", "修改失败!");
+			if ("".equals(newPwd)) {
+				ob.put("code", 3);
+				ob.put("desc", "密码不能为空!");
+				JsonUtil.jsonString(response, ob.toString());
+				return;
+			}
 			List<TblDev> dList = this.devService.getResultList(" o.devNo=? and o.devKey=?", null, new Object[]{devNo,WorkUtil.pwdEncrypt(oldPwd)});
 			if(dList != null && dList.size() > 0){
 				TblDev dev = dList.get(0);
@@ -1429,6 +1471,8 @@ public class ServerAction extends BaseAction {
 		String operatorName = Util.dealNull(request.getParameter("operatorName"));
 		String imsi = Util.dealNull(request.getParameter("imsi"));
 		String jPushRegistrationID = Util.dealNull(request.getParameter("JPushRegistrationID"));
+		LOG.info(devNo+" saveMobileInfo on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
 			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
@@ -1522,6 +1566,8 @@ public class ServerAction extends BaseAction {
 		String systemOS = Util.dealNull(request.getParameter("systemOS"));
 		String netType = Util.dealNull(request.getParameter("netType"));
 		String content = Util.dealNull(request.getParameter("content"));
+		LOG.info(devNo+" saveProblem on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject ob = new JSONObject();
 			ob.put("code", 1);
@@ -1556,10 +1602,18 @@ public class ServerAction extends BaseAction {
 		String account = Util.dealNull(request.getParameter("account"));
 		String oldPwd = Util.dealNull(request.getParameter("oldPwd"));
 		String newPwd = Util.dealNull(request.getParameter("newPwd"));
+		LOG.info(account+" modifyUserPwd on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject ob = new JSONObject();
 			ob.put("code", 1);
 			ob.put("desc", "修改失败!");
+			if ("".equals(newPwd)) {
+				ob.put("code", 2);
+				ob.put("desc", "密码不能为空!");
+				JsonUtil.jsonString(response, ob.toString());
+				return;
+			}
 			List<TblUser> uList = this.userService.getResultList(" o.account=? and o.pwd=?", null, new Object[]{account,WorkUtil.pwdEncrypt(oldPwd)});
 			if(uList != null && uList.size() > 0){
 				TblUser user = uList.get(0);
@@ -1587,6 +1641,8 @@ public class ServerAction extends BaseAction {
 		String devNo = Util.dealNull(request.getParameter("devNo"));
 		String clientIP = Util.dealNull(request.getParameter("clientIP"));
 		String logDesc = Util.dealNull(request.getParameter("logDesc"));
+		LOG.info(devNo+" saveError on "+ Util.dateToStr(new Date()));
+		
 		try {
 			JSONObject ob = new JSONObject();
 			ob.put("code", 1);
@@ -1615,6 +1671,8 @@ public class ServerAction extends BaseAction {
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		String clientIP = Util.dealNull(request.getParameter("clientIP"));
+		LOG.info(account+" getPlayUrl on "+ Util.dateToStr(new Date()));
+		
 		TblUser user = (TblUser) JSONObject.toBean(obj.optJSONObject("user"),TblUser.class);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -1671,6 +1729,8 @@ public class ServerAction extends BaseAction {
 		String flag = Util.dealNull(request.getParameter("flag"));
 		String startTime = Util.dealNull(request.getParameter("startTime"));
 		String topic = Util.dealNull(request.getParameter("topic"));
+		LOG.info(account+" createMeetingRoom on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		TblUser user = (TblUser) JSONObject.toBean(obj.optJSONObject("user"),TblUser.class);
 		if(obj.optInt("code", -2)!=0){
@@ -1839,6 +1899,8 @@ public class ServerAction extends BaseAction {
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String meetingId = Util.dealNull(request.getParameter("meetingId"));
+		LOG.info(account+" endMeeting on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -1932,6 +1994,8 @@ public class ServerAction extends BaseAction {
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String pageNo = Util.dealNull(request.getParameter("pageNo"));
 		String pageSize = Util.dealNull(request.getParameter("pageSize"));
+		LOG.info(account+" queryRegularMeetingList on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		TblUser user = (TblUser) JSONObject.toBean(obj.optJSONObject("user"),TblUser.class);
 		if(obj.optInt("code", -2)!=0){
@@ -1985,6 +2049,8 @@ public class ServerAction extends BaseAction {
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String meetingId = Util.dealNull(request.getParameter("meetingId"));
+		LOG.info(account+" deleteMeeting on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -2080,6 +2146,8 @@ public class ServerAction extends BaseAction {
 		String meetingId = Util.dealNull(request.getParameter("meetingId"));
 		String devDatas = Util.dealNull(request.getParameter("data"));
 		String type = Util.dealNull(request.getParameter("type"));
+		LOG.info(account+" joinMeeting on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		TblUser user = (TblUser) JSONObject.toBean(obj.optJSONObject("user"),TblUser.class);
 		if(obj.optInt("code", -2)!=0){
@@ -2164,6 +2232,8 @@ public class ServerAction extends BaseAction {
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String meetingId = Util.dealNull(request.getParameter("meetingId"));
 		String status = Util.dealNull(request.getParameter("status"));
+		LOG.info(account+" getMeetingInfo on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());
@@ -2314,12 +2384,14 @@ public class ServerAction extends BaseAction {
 		String answer5 = Util.dealNull(request.getParameter("answer5"));
 		String timeLen = Util.dealNull(request.getParameter("timeLen"));
 		System.out.println("**saveQuestione**:"+devNo+"="+timeLen+"&&"+Util.dateToStr(new Date()));
+		JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
+		if(obj.optInt("code", -1)!=0){
+			JsonUtil.jsonString(response, obj.toString());
+			return;
+		}
+		obj.put("code", -1);
+		obj.put("desc", "添加失败");
 		try {
-			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
-			if(obj.optInt("code", -1)!=0){
-				JsonUtil.jsonString(response, obj.toString());
-				return;
-			}
 			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
 			obj.remove("dev");
 			if (Integer.parseInt(timeLen) > (24*60*60)) {//直播时长数值超过24小时，判断为非法数据，不保存数据库
@@ -2390,10 +2462,10 @@ public class ServerAction extends BaseAction {
 			}
 			obj.put("code", 0);
 			obj.put("desc", "添加成功");
-			JsonUtil.jsonString(response, obj.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		JsonUtil.jsonString(response, obj.toString());
 	}
 	
 	/**
@@ -2427,6 +2499,8 @@ public class ServerAction extends BaseAction {
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
 		String zcode = Util.dealNull(request.getParameter("zcode"));
+		LOG.info(account+" enterMeeting on "+ Util.dateToStr(new Date()));
+		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code", -2)!=0){
 			JsonUtil.jsonString(response, obj.toString());

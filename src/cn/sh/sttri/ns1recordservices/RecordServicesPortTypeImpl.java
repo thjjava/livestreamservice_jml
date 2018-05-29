@@ -8,6 +8,7 @@ package cn.sh.sttri.ns1recordservices;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.sttri.pojo.DevRecordFile;
 import com.sttri.pojo.DevRecordTime;
 import com.sttri.pojo.MediaServer;
 import com.sttri.pojo.TblDev;
+import com.sttri.pojo.UserQuestion;
 import com.sttri.service.IDevLogService;
 import com.sttri.service.IDevRecordFileService;
 import com.sttri.service.IDevRecordService;
@@ -161,7 +163,7 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 				dev.setEditTime(Util.dateToStr(new Date()));
 				this.devService.update(dev);
 				//更新设备直播时长记录
-				updateDevRecordTime(dev);
+				updateDevRecordTime(dev,recordId);
 				//记录日志
 				saveDevLog(dev, 3, dev.getDevNo()+",直播过程中出现网络异常导致中断!");
 				res.setResult(0);
@@ -218,11 +220,11 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 	 * @param status 0-直播结束 1-直播开始
 	 * @throws ParseException 
 	 */
-	public void updateDevRecordTime(TblDev dev) throws ParseException{
-		LinkedHashMap<String, String> orderBy = new LinkedHashMap<String, String>();
-		orderBy.put("addTime", "desc");
-		List<DevRecordTime> list = this.devRecordTimeService.getResultList(" o.dev.id=? and o.status=?", orderBy, new Object[]{dev.getId(),1});
-		if (list != null) {
+	public void updateDevRecordTime(TblDev dev,String recordId) throws ParseException{
+		/*LinkedHashMap<String, String> orderBy = new LinkedHashMap<String, String>();
+		orderBy.put("addTime", "desc");*/
+		List<DevRecordTime> list = this.devRecordTimeService.getResultList(" o.dev.id=? and o.status=? and o.recordTaskNo=? ", null, new Object[]{dev.getId(),1,recordId});
+		if (list != null && list.size() >0) {
 			DevRecordTime devRecordTime = list.get(0);
 			String recordStartTime = devRecordTime.getRecordStartTime();
 			String recordEndTime = Util.dateToStr(new Date());
@@ -230,11 +232,56 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date startDate=sdf.parse(recordStartTime);
 		    Date endDate=sdf.parse(recordEndTime);
+		    //当前时间减去90秒，减去录像服务等待的时间
+		    Calendar c = Calendar.getInstance();
+		    c.setTime(endDate);
+		    c.add(Calendar.SECOND, -90);
+		    endDate = c.getTime();
 			String timeLen = Util.getDatePoor(endDate, startDate);
 			devRecordTime.setRecordEndTime(recordEndTime);
 			devRecordTime.setTimeLen(timeLen);
 			devRecordTime.setStatus(0);
 			this.devRecordTimeService.update(devRecordTime);
+			//重新更新晨会质量表里该设备的直播时长
+			String date = recordStartTime.substring(0,10);
+			List<UserQuestion> uList = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+			if (uList != null && uList.size() >0) {
+				UserQuestion userQuestion = uList.get(0);
+				int score = userQuestion.getScore();
+				int hasdTimeLen = userQuestion.getTimeLen();
+				List<DevRecordTime> drt = this.devRecordTimeService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+				int liveTimeLen = getTimeLen(drt);
+				//开会时长大于等于15分钟算1分,当该设备的以前统计的时长小于15分钟，并且总时长大于等于15分钟了，则分数+1
+				if (hasdTimeLen < (15*60) && liveTimeLen >= (15*60)) {
+					score += 1;
+				}
+				userQuestion.setTimeLen(liveTimeLen);
+				userQuestion.setScore(score);
+				this.userQuestionService.update(userQuestion);
+			}
 		}
+	}
+	
+	/**
+	 * 时间字符串转化为具体秒数，recordTime="0天0小时10分钟31秒"
+	 * @param list
+	 * @return 
+	 */
+	public int getTimeLen(List<DevRecordTime> list){
+		int timeLen =0;
+		if (list != null && list.size() > 0) {
+			for (DevRecordTime devRecordTime : list) {
+				String recordTime = devRecordTime.getTimeLen();
+				String[] s1 = recordTime.split("天");
+				timeLen += Integer.parseInt(s1[0])*24*60*60;//天->秒
+				String[] s2 = s1[1].split("小时");
+				timeLen += Integer.parseInt(s2[0])*60*60;//小时->秒
+				String[] s3 = s2[1].split("分钟");
+				timeLen += Integer.parseInt(s3[0])*60;//分钟->秒
+				String[] s4 = s3[1].split("秒");
+				timeLen += Integer.parseInt(s4[0]);
+			}
+		}
+		return timeLen;
 	}
 }

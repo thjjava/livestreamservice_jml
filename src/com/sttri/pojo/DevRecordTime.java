@@ -27,6 +27,7 @@ public class DevRecordTime implements java.io.Serializable {
 	private String timeLen;
 	private Integer status;
 	private String addTime;
+	private String recordTaskNo;
 	
 	public DevRecordTime() {
 	}
@@ -96,4 +97,14 @@ public class DevRecordTime implements java.io.Serializable {
 	public void setAddTime(String addTime) {
 		this.addTime = addTime;
 	}
+
+	@Column(name = "RecordTaskNo", length = 50)
+	public String getRecordTaskNo() {
+		return recordTaskNo;
+	}
+
+	public void setRecordTaskNo(String recordTaskNo) {
+		this.recordTaskNo = recordTaskNo;
+	}
+	
 }
