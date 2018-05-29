@@ -221,8 +221,6 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 	 * @throws ParseException 
 	 */
 	public void updateDevRecordTime(TblDev dev,String recordId) throws ParseException{
-		/*LinkedHashMap<String, String> orderBy = new LinkedHashMap<String, String>();
-		orderBy.put("addTime", "desc");*/
 		List<DevRecordTime> list = this.devRecordTimeService.getResultList(" o.dev.id=? and o.status=? and o.recordTaskNo=? ", null, new Object[]{dev.getId(),1,recordId});
 		if (list != null && list.size() >0) {
 			DevRecordTime devRecordTime = list.get(0);
@@ -244,11 +242,13 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 			this.devRecordTimeService.update(devRecordTime);
 			//重新更新晨会质量表里该设备的直播时长
 			String date = recordStartTime.substring(0,10);
+			//查询date日期提交的问卷记录
 			List<UserQuestion> uList = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
 			if (uList != null && uList.size() >0) {
 				UserQuestion userQuestion = uList.get(0);
 				int score = userQuestion.getScore();
 				int hasdTimeLen = userQuestion.getTimeLen();
+				//查询date日期所有录像任务数据
 				List<DevRecordTime> drt = this.devRecordTimeService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
 				int liveTimeLen = getTimeLen(drt);
 				//开会时长大于等于15分钟算1分,当该设备的以前统计的时长小于15分钟，并且总时长大于等于15分钟了，则分数+1
