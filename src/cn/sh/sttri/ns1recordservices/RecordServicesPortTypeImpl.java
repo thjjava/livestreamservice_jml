@@ -125,8 +125,7 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 	@Override
 	public DevStreamErrorRes devStreamError(DevStreamErrorReq devStreamErrorReq) {
 		// TODO Auto-generated method stub
-		 LOG.info("Executing operation devRecordUp");
-	     System.out.println(devStreamErrorReq);
+		 LOG.info("Executing operation devStreamError："+devStreamErrorReq.getRecordId());
 	     DevStreamErrorRes res = new DevStreamErrorRes();
 	     try {
 			String recordId = devStreamErrorReq.getRecordId();

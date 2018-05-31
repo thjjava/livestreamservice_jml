@@ -90,13 +90,7 @@ public class DevServiceImpl implements IDevService {
 	@Override
 	public JSONObject videoStart(TblDev dev,String protocol) {
 		if(dev.getOnLines()==0){
-			videoEnd(dev,"");
-			try {
-				updateDevRecordTime(dev);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			videoEnd(dev,dev.getDrId());
 		}
 		JSONObject obj = new JSONObject();
 		boolean flag = false;
@@ -269,7 +263,7 @@ public class DevServiceImpl implements IDevService {
 		update(dev);
 		//更新设备直播时长记录
 		try {
-			updateDevRecordTime(dev);
+			updateDevRecordTime(dev,recordTaskNo);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -301,10 +295,8 @@ public class DevServiceImpl implements IDevService {
 	 * @param status 0-直播结束 1-直播开始
 	 * @throws ParseException 
 	 */
-	public void updateDevRecordTime(TblDev dev) throws ParseException{
-		LinkedHashMap<String, String> orderBy = new LinkedHashMap<String, String>();
-		orderBy.put("addTime", "desc");
-		List<DevRecordTime> list = this.devRecordTimeService.getResultList(" o.dev.id=? and o.status=?", orderBy, new Object[]{dev.getId(),1});
+	public void updateDevRecordTime(TblDev dev,String recordTaskNo) throws ParseException{
+		List<DevRecordTime> list = this.devRecordTimeService.getResultList(" o.dev.id=? and o.status=? and o.recordTaskNo=? ", null, new Object[]{dev.getId(),1,recordTaskNo});
 		if (list != null && list.size() > 0) {
 			DevRecordTime devRecordTime = list.get(0);
 			String recordStartTime = devRecordTime.getRecordStartTime();
