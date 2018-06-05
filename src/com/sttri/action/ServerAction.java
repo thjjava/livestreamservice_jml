@@ -2400,7 +2400,7 @@ public class ServerAction extends BaseAction {
 				JsonUtil.jsonString(response, obj.toString());
 				return;
 			}
-
+			Thread.sleep(30*1000);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(new Date());
 			List<UserQuestion> list = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});

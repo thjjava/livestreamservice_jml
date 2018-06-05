@@ -310,7 +310,6 @@ public class DevServiceImpl implements IDevService {
 			devRecordTime.setTimeLen(timeLen);
 			devRecordTime.setStatus(0);
 			this.devRecordTimeService.update(devRecordTime);
-			
 		}
 	}
 	
