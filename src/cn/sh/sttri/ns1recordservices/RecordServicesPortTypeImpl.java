@@ -85,7 +85,7 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
      * @see cn.sh.sttri.ns1recordservices.RecordServicesPortType#devRecordUp(cn.sh.sttri.ns1recordservices.DevRecordUpReq  devRecordUpReq )*
      */
     public cn.sh.sttri.ns1recordservices.DevRecordUpRes devRecordUp(DevRecordUpReq devRecordUpReq) { 
-        LOG.info("Executing operation devRecordUp=："+devRecordUpReq.getRecordId()+" 录像任务上传文件="+Util.dateToStr(new Date()));
+        LOG.info("Executing operation devRecordUp=："+devRecordUpReq.getRecordId()+"-录像任务上传文件@:"+Util.dateToStr(new Date()));
         try {
         	DevRecordFile drf = new DevRecordFile();
         	drf.setId(Util.getUUID(8));
