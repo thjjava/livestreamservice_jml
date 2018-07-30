@@ -16,12 +16,14 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.xml.XMLSerializer;
 
+import org.apache.cxf.common.util.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 
 
 
@@ -201,11 +203,11 @@ public class ServerAction extends BaseAction {
 			System.out.println("devLogin接收参数:"+param.toString());
 			JSONObject obj = WorkUtil.checkDev(devService, param.optString("DevID", ""), param.optString("DevKey", ""));
 			int upgradeStatus = 0;
-			String downUrl = "", newVer = "";
-			String  logDesc = "";
+			String downUrl = "", newVer = "", logDesc = "", devName = param.optString("DevID", "");
 			TblDev dev = null;
 			if(obj.optInt("code", -1)==0){
 				dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
+				devName = dev.getDevName();
 				//dev.setOnLines(0);
 //				dev.setLastLoginTime(Util.dateToStr(new Date()));
 //				devService.update(dev);
@@ -249,6 +251,7 @@ public class ServerAction extends BaseAction {
 			root.addElement("NewVer").addText(newVer);
 			if(Util.notEmpty(downUrl))
 				root.addElement("DownUrl").addText(downUrl);
+			root.addElement("devName").addText(devName);//返回结果中新增账号名称
 			System.out.println("devLogin返回结果:"+doc.asXML());
 			JsonUtil.jsonString(response, doc.asXML());
 			//JsonUtil.jsonBeanToString(response, obj);
@@ -1741,24 +1744,34 @@ public class ServerAction extends BaseAction {
 		JSONObject ob = new JSONObject();
 		ob.put("code", 0);
 		ob.put("desc", "会议创建成功!");
+		
+		if (user.getMeetingFlag()==0) {
+			ob.put("code", 5);
+			ob.put("desc", "会议创建失败，该用户未开通会易通功能!");
+			JsonUtil.jsonString(response, ob.toString());
+			return;
+		}
+		
 		/*
 		 * 注释日期：2018-1-10 
 		 * 注释原因：创建会议室机制改为从会议室资源池中获取会易通账号
 		 * String zcode = user.getZcode();
 		 */
 		String zcode = setUserMeetingAccount(user);
-		if ("".equals(zcode) || zcode == null || user.getMeetingFlag()==0) {
-			ob.put("code", 1);
-			ob.put("desc", "会议创建失败，该用户未开通会易通功能!");
+		System.out.println(account+",获取会易通账号："+zcode);
+		if ("".equals(zcode) || zcode == null) {
+			ob.put("code", 6);
+			ob.put("desc", "会议创建失败，会议室资源已满!");
 			JsonUtil.jsonString(response, ob.toString());
 			return;
 		}
 		//会议类型为即时会议时，开始时间默认当前日期
 		startTime = "1".equals(meetingType)?Util.dateToStr(new Date()):startTime;
 		obj = MeetingApiUtil.createMeetingRoom(zcode, topic, Integer.parseInt(meetingType), meetingPwd, startTime);
+		System.out.println("**创建会议结果是否为null**："+obj.get("code"));
 		if (obj.get("code")!=null ) {
-			ob.put("code", obj.getString("code"));
-			ob.put("desc", obj.getString("msg"));
+			ob.put("code", 7);
+			ob.put("desc", "会易通服务出现异常，会议创建失败!");
 			JsonUtil.jsonString(response, ob.toString());
 			return;
 		}
@@ -2371,6 +2384,8 @@ public class ServerAction extends BaseAction {
 	
 	/**
 	 * 保存自评结果
+	 * 修改日期 ：2018-7-20 
+	 * 修改原因：应今麦郎方要求问题2改成问题6显示
 	 */
 	public void saveUserQuestion(){
 		LOG.info("Executing operation saveUserQuestion");
@@ -2383,6 +2398,7 @@ public class ServerAction extends BaseAction {
 		String answer4 = Util.dealNull(request.getParameter("answer4"));
 		String answer5 = Util.dealNull(request.getParameter("answer5"));
 		String timeLen = Util.dealNull(request.getParameter("timeLen"));
+		String answer6 = Util.dealNull(request.getParameter("answer6"));
 		System.out.println("**saveQuestione**:"+devNo+"="+timeLen+"&&"+Util.dateToStr(new Date()));
 		JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
 		if(obj.optInt("code", -1)!=0){
@@ -2400,9 +2416,15 @@ public class ServerAction extends BaseAction {
 				JsonUtil.jsonString(response, obj.toString());
 				return;
 			}
-			Thread.sleep(30*1000);
+//			Thread.sleep(10*1000);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(new Date());
+			if (StringUtils.isEmpty(answer2)) {
+				answer2="0";
+			}
+			if (StringUtils.isEmpty(answer6)) {
+				answer6="0";
+			}
 			List<UserQuestion> list = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
 			if (list != null && list.size() >0) {
 				UserQuestion userQuestion = list.get(0);
@@ -2411,8 +2433,9 @@ public class ServerAction extends BaseAction {
 				userQuestion.setAnswer3(Integer.parseInt(answer3));
 				userQuestion.setAnswer4(Integer.parseInt(answer4));
 				userQuestion.setAnswer5(Integer.parseInt(answer5));
+				userQuestion.setAnswer6(Integer.parseInt(answer6));
 				int score = 0;
-				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4)+Integer.parseInt(answer6);
 				//参会人数大于等于2算1分
 				if (Integer.parseInt(answer5)>=2) {
 					score += 1;
@@ -2443,8 +2466,9 @@ public class ServerAction extends BaseAction {
 				userQuestion.setAnswer3(Integer.parseInt(answer3));
 				userQuestion.setAnswer4(Integer.parseInt(answer4));
 				userQuestion.setAnswer5(Integer.parseInt(answer5));
+				userQuestion.setAnswer6(Integer.parseInt(answer6));
 				int score = 0;
-				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4);
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4)+Integer.parseInt(answer6);
 				//参会人数大于等于2算1分
 				if (Integer.parseInt(answer5)>=2) {
 					score += 1;

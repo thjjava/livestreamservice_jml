@@ -61,6 +61,9 @@ public class MeetingApiUtil {
 	public static JSONObject createMeetingRoom(String zcode,String topic,int type,String password,String startTime){
 		String param = API+"&zcode="+zcode+"&password="+password+"&topic="+topic+"&type="+type+"&start_time="+startTime+"&option_jbh=true";
 		String result = HttpUtil.sendPost(MeetingApiUrlEnum.createMeetingUrl.getValue(), param);
+		if ("".equals(result)) {
+			result="{\"code\":500}";
+		}
 		return JSONObject.fromObject(result);
 	}
 	
@@ -156,7 +159,10 @@ public class MeetingApiUtil {
 		System.out.println(getUser("jmlr1@jml.com"));
 		JSONObject object = getUser("xtdx_pc@jml.com");
 		System.out.println(object.toString());
-//		System.out.println(createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13"));//type=1,开始时间可以为空
+		System.out.println(queryRegularMeetingList("7064270569", 10000000, 10));
+		System.out.println(createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13"));//type=1,开始时间可以为空
+		JSONObject ob = createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13");
+		System.out.println(ob.toString());
 //		System.out.println(endMeeting("4531530112", "1586920676"));
 //		System.out.println(getMeeting("4531530112", "1321724782"));
 		/*System.out.println("--------1-------");

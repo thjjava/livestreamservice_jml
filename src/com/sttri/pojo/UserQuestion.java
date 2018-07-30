@@ -29,6 +29,7 @@ public class UserQuestion implements java.io.Serializable {
 	private Integer score;
 	private Integer timeLen;
 	private String addTime;
+	private Integer answer6;
 	
 	public UserQuestion() {
 	}
@@ -133,5 +134,14 @@ public class UserQuestion implements java.io.Serializable {
 
 	public void setAddTime(String addTime) {
 		this.addTime = addTime;
+	}
+	
+	@Column(name = "Answer6")
+	public Integer getAnswer6() {
+		return answer6;
+	}
+
+	public void setAnswer6(Integer answer6) {
+		this.answer6 = answer6;
 	}
 }
