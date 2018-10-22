@@ -2548,4 +2548,73 @@ public class ServerAction extends BaseAction {
 			e.printStackTrace();
 		}
 	}
+	
+	public void getDevRecordList(){
+		LOG.info("Executing operation getDevRecordList");
+		response.setCharacterEncoding("UTF-8");
+		String devNo = Util.dealNull(request.getParameter("devNo"));
+		String devKey = Util.dealNull(request.getParameter("devKey"));
+		String startTime = Util.dealNull(request.getParameter("startTime"));
+		String endTime = Util.dealNull(request.getParameter("endTime"));
+		
+		LOG.info(devNo+" getDevRecordList on "+ Util.dateToStr(new Date()));
+		JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
+		if(obj.optInt("code", -1)!=0){
+			JsonUtil.jsonString(response, obj.toString());
+			return;
+		}
+		obj.remove("dev");
+		obj.put("code", -1);
+		obj.put("desc", "查询失败");
+		obj.put("recordList", "[]");
+		
+		List<Object> param = new ArrayList<Object>();
+		LinkedHashMap<String,String> orderby = new LinkedHashMap<String,String>();
+		orderby.put("recordStartTime", "asc");
+		String where = " o.dev.devNo=? ";
+		param.add(devNo);
+		if(Util.notEmpty(startTime)){
+			where += "and o.recordStartTime>=? ";
+			param.add(startTime);
+		}
+		if(Util.notEmpty(endTime)){
+			where += "and o.recordStartTime<=? ";
+			param.add(endTime);
+		}
+		List<DevRecord> drlist = devRecordService.getResultList(where, orderby, param.toArray());
+		JSONArray array = new JSONArray();
+		if(drlist==null||drlist.size()==0){
+			obj.put("code", 0);
+			obj.put("desc", "查询成功");
+			JsonUtil.jsonString(response, obj.toString());
+			return ;
+		}
+		
+		JSONObject ob = null;
+		List<DevRecordFile> drflist = null;
+		MediaServer mediaServer = null;
+		for(DevRecord dr:drlist){
+			drflist = this.devRecordFileService.getResultList("o.drId=?", orderby, new Object[]{dr.getId()});
+			if(drflist==null || drflist.size()==0)
+				continue;
+			mediaServer = mediaServerService.getById(dr.getMediaServerId());
+			for(DevRecordFile drf:drflist){
+//				if(drf.getRecordSize()<10000)
+//					continue;
+				ob = new JSONObject();
+				ob.put("id", drf.getId());
+				ob.put("name", drf.getRecordName());
+				ob.put("startTime", drf.getRecordStartTime());
+				ob.put("endTime", drf.getRecordEndTime());
+				ob.put("recordSize", drf.getRecordSize());
+				ob.put("playUrl", mediaServer.getRecordPlayUrl()+drf.getRecordName());
+				ob.put("downUrl", mediaServer.getRecordDownUrl()+drf.getRecordName());
+				array.add(ob);
+			}
+		}
+		obj.put("code", 0);
+		obj.put("desc", "查询成功");
+		obj.put("recordList", array.toString());
+		JsonUtil.jsonString(response, obj.toString());
+	}
 }
