@@ -21,7 +21,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
@@ -164,8 +163,10 @@ public class ServerAction extends BaseAction {
 			if(Util.notEmpty(sourceType)&&Util.notEmpty(conType)&&Util.notEmpty(conVer)){
 				TblControl control = controlService.checkVer(Integer.valueOf(sourceType), Integer.valueOf(conType), conVer);
 				if(control!=null){
-					obj.put("upgradeStatus", control.getUpgradeStatus());
-					obj.put("downUrl", Constant.readKey("appDownUrl")+control.getConPath());
+					if (Util.compareVersion(conVer, control.getConVer()) < 0 ) {
+						obj.put("upgradeStatus", control.getUpgradeStatus());
+						obj.put("downUrl", Constant.readKey("appDownUrl")+control.getConPath());
+					}
 				}else{
 					obj.put("upgradeStatus", 0);
 					obj.put("downUrl", "");
@@ -218,9 +219,11 @@ public class ServerAction extends BaseAction {
 				if(Util.notEmpty(sourceType)&&Util.notEmpty(conType)&&Util.notEmpty(conVer)){
 					TblControl control = controlService.checkVer(Integer.valueOf(sourceType), Integer.valueOf(conType), conVer);
 					if(control!=null){
-						upgradeStatus = control.getUpgradeStatus();
-						downUrl = Constant.readKey("appDownUrl")+control.getConPath();
 						newVer = control.getConVer();
+						if (Util.compareVersion(conVer, control.getConVer()) < 0 ) {
+							upgradeStatus = control.getUpgradeStatus();
+							downUrl = Constant.readKey("appDownUrl")+control.getConPath();
+						}
 					}else{
 						control = controlService.checkVer(Integer.valueOf(sourceType), Integer.valueOf(conType), "");
 						if(control!=null){
@@ -269,15 +272,12 @@ public class ServerAction extends BaseAction {
 		try {
 			JSONObject param = (JSONObject)new XMLSerializer().readFromStream(request.getInputStream());
 			JSONObject obj = WorkUtil.checkDev(devService, param.optString("DevID", ""), param.optString("DevKey", ""));
-			
 			if(obj.optInt("code", -1)==0){
 				TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
 				dev.setOnLines(1);
 				devService.update(dev);
 			}
-			
 			obj.remove("dev");
-			
 			Document doc = DocumentHelper.createDocument();
 			Element root = doc.addElement("LOGOUT_RES");
 			doc.setRootElement(root);
@@ -294,7 +294,6 @@ public class ServerAction extends BaseAction {
 	 * pc获取设备列表
 	 * @return
 	 */
-	@RequestMapping()
 	public String getDevList(){
 		LOG.info("Executing operation getDevList");
 		response.setCharacterEncoding("UTF-8");
@@ -2386,6 +2385,9 @@ public class ServerAction extends BaseAction {
 	 * 保存自评结果
 	 * 修改日期 ：2018-7-20 
 	 * 修改原因：应今麦郎方要求问题2改成问题6显示
+	 * --------------------------------
+	 * 修改日期：2018-12-03
+	 * 修改原因：应今麦郎要求显示新增问题7-重点项目追踪
 	 */
 	public void saveUserQuestion(){
 		LOG.info("Executing operation saveUserQuestion");
@@ -2399,6 +2401,7 @@ public class ServerAction extends BaseAction {
 		String answer5 = Util.dealNull(request.getParameter("answer5"));
 		String timeLen = Util.dealNull(request.getParameter("timeLen"));
 		String answer6 = Util.dealNull(request.getParameter("answer6"));
+		String answer7 = Util.dealNull(request.getParameter("answer7"));
 		System.out.println("**saveQuestione**:"+devNo+"="+timeLen+"&&"+Util.dateToStr(new Date()));
 		JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
 		if(obj.optInt("code", -1)!=0){
@@ -2416,15 +2419,17 @@ public class ServerAction extends BaseAction {
 				JsonUtil.jsonString(response, obj.toString());
 				return;
 			}
-//			Thread.sleep(10*1000);
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			String date = sdf.format(new Date());
 			if (StringUtils.isEmpty(answer2)) {
 				answer2="0";
 			}
 			if (StringUtils.isEmpty(answer6)) {
 				answer6="0";
 			}
+			if (StringUtils.isEmpty(answer7)) {
+				answer7="0";
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String date = sdf.format(new Date());
 			List<UserQuestion> list = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
 			if (list != null && list.size() >0) {
 				UserQuestion userQuestion = list.get(0);
@@ -2434,8 +2439,9 @@ public class ServerAction extends BaseAction {
 				userQuestion.setAnswer4(Integer.parseInt(answer4));
 				userQuestion.setAnswer5(Integer.parseInt(answer5));
 				userQuestion.setAnswer6(Integer.parseInt(answer6));
+				userQuestion.setAnswer7(Integer.parseInt(answer7));
 				int score = 0;
-				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4)+Integer.parseInt(answer6);
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4)+Integer.parseInt(answer6)+Integer.parseInt(answer7);
 				//参会人数大于等于2算1分
 				if (Integer.parseInt(answer5)>=2) {
 					score += 1;
@@ -2467,8 +2473,9 @@ public class ServerAction extends BaseAction {
 				userQuestion.setAnswer4(Integer.parseInt(answer4));
 				userQuestion.setAnswer5(Integer.parseInt(answer5));
 				userQuestion.setAnswer6(Integer.parseInt(answer6));
+				userQuestion.setAnswer7(Integer.parseInt(answer7));
 				int score = 0;
-				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4)+Integer.parseInt(answer6);
+				score += Integer.parseInt(answer1)+Integer.parseInt(answer2)+Integer.parseInt(answer3)+Integer.parseInt(answer4)+Integer.parseInt(answer6)+Integer.parseInt(answer7);
 				//参会人数大于等于2算1分
 				if (Integer.parseInt(answer5)>=2) {
 					score += 1;

@@ -63,10 +63,10 @@ public class ControlServiceImpl implements IControlService {
 		List<Object> param = new ArrayList<Object>();
 		param.add(sourceType);
 		param.add(conType);
-		if(Util.notEmpty(conVer)){
+		/*if(Util.notEmpty(conVer)){
 			where += "and o.conVer>?";
 			param.add(conVer);
-		}
+		}*/
 		LinkedHashMap<String, String> orderby = new LinkedHashMap<String, String>();
 		orderby.put("conVer", "desc");
 		List<TblControl> clist = getResultList(where, orderby, param.toArray());
