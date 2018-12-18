@@ -1054,12 +1054,14 @@ public class ServerAction extends BaseAction {
 		if(Util.notEmpty(sourceType)&&Util.notEmpty(conType)&&Util.notEmpty(conVer)){
 			TblControl control = controlService.checkVer(Integer.valueOf(sourceType), Integer.valueOf(conType), conVer);
 			if(control!=null){
-				object.put("result", 5);
-				object.put("msg", "有新版本需要升级!");
-				object.put("upgradeStatus", control.getUpgradeStatus());
-				object.put("downUrl", Constant.readKey("appDownUrl")+control.getConPath());
-				JsonUtil.jsonString(response, object.toString());
-				return;
+				if (Util.compareVersion(conVer, control.getConVer()) < 0 ) {
+					object.put("result", 5);
+					object.put("msg", "有新版本需要升级!");
+					object.put("upgradeStatus", control.getUpgradeStatus());
+					object.put("downUrl", Constant.readKey("appDownUrl")+control.getConPath());
+					JsonUtil.jsonString(response, object.toString());
+					return;
+				}
 			}
 		}
 		
@@ -1162,12 +1164,14 @@ public class ServerAction extends BaseAction {
 		if(Util.notEmpty(sourceType)&&Util.notEmpty(conType)&&Util.notEmpty(conVer)){
 			TblControl control = controlService.checkVer(Integer.valueOf(sourceType), Integer.valueOf(conType), conVer);
 			if(control!=null){
-				object.put("result", 5);
-				object.put("msg", "有新版本需要升级!");
-				object.put("upgradeStatus", control.getUpgradeStatus());
-				object.put("downUrl", Constant.readKey("appDownUrl")+control.getConPath());
-				JsonUtil.jsonString(response, object.toString());
-				return;
+				if (Util.compareVersion(conVer, control.getConVer()) < 0 ) {
+					object.put("result", 5);
+					object.put("msg", "有新版本需要升级!");
+					object.put("upgradeStatus", control.getUpgradeStatus());
+					object.put("downUrl", Constant.readKey("appDownUrl")+control.getConPath());
+					JsonUtil.jsonString(response, object.toString());
+					return;
+				}
 			}
 		}
 		
