@@ -223,7 +223,7 @@ public class DevServiceImpl implements IDevService {
 		this.mediaServerService.update(mediaServer);
 		
 		if("".equals(recordTaskNo) || recordTaskNo == null || recordTaskNo == ""){
-			if(!dev.getDrId().equals("")){
+			if(!"".equals(dev.getDrId())){
 				recordTaskNo = dev.getDrId();
 			}else {
 				dev.setServerId("");
