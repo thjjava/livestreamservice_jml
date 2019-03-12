@@ -156,13 +156,14 @@ public class MeetingApiUtil {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getUser("jmlr1@jml.com"));
-		JSONObject object = getUser("xtdx_pc@jml.com");
+//		System.out.println(getUser("jmlr1@jml.com"));
+		JSONObject object = getUser("jml0014@jml.com");
 		System.out.println(object.toString());
-		System.out.println(queryRegularMeetingList("7064270569", 10000000, 10));
-		System.out.println(createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13"));//type=1,开始时间可以为空
-		JSONObject ob = createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13");
-		System.out.println(ob.toString());
+		System.out.println("1130".equals(object.getString("code")));
+		System.out.println(queryRegularMeetingList("3668720032", 10000000, 10));
+//		System.out.println(createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13"));//type=1,开始时间可以为空
+//		JSONObject ob = createMeetingRoom("4531530112", "测试3", 2, "123456", "2017-11-07 14:11:13");
+//		System.out.println(ob.toString());
 //		System.out.println(endMeeting("4531530112", "1586920676"));
 //		System.out.println(getMeeting("4531530112", "1321724782"));
 		/*System.out.println("--------1-------");

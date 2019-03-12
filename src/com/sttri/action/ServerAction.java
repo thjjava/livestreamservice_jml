@@ -209,10 +209,6 @@ public class ServerAction extends BaseAction {
 			if(obj.optInt("code", -1)==0){
 				dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
 				devName = dev.getDevName();
-				//dev.setOnLines(0);
-//				dev.setLastLoginTime(Util.dateToStr(new Date()));
-//				devService.update(dev);
-				
 				String sourceType = param.optString("SourceType","");
 				String conType = param.optString("ConType", "");
 				String conVer = param.optString("ConVer", "");
@@ -257,7 +253,6 @@ public class ServerAction extends BaseAction {
 			root.addElement("devName").addText(devName);//返回结果中新增账号名称
 			System.out.println("devLogin返回结果:"+doc.asXML());
 			JsonUtil.jsonString(response, doc.asXML());
-			//JsonUtil.jsonBeanToString(response, obj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -636,7 +631,7 @@ public class ServerAction extends BaseAction {
 			where += "and o.recordStartTime<=? ";
 			param.add(endTime);
 		}
-		List<DevRecord> drlist = devRecordService.getResultList(where, orderby, param.toArray());
+		List<DevRecord> drlist = this.devRecordService.getResultList(where, orderby, param.toArray());
 		JSONArray array = new JSONArray();
 		if(drlist==null||drlist.size()==0){
 			JsonUtil.jsonString(response, array.toString());
@@ -647,10 +642,10 @@ public class ServerAction extends BaseAction {
 		List<DevRecordFile> drflist = null;
 		MediaServer mediaServer = null;
 		for(DevRecord dr:drlist){
-			drflist = devRecordFileService.getResultList("o.drId=?", orderby, new Object[]{dr.getId()});
+			drflist = this.devRecordFileService.getResultList("o.drId=?", orderby, new Object[]{dr.getId()});
 			if(drflist==null || drflist.size()==0)
 				continue;
-			mediaServer = mediaServerService.getById(dr.getMediaServerId());
+			mediaServer = this.mediaServerService.getById(dr.getMediaServerId());
 			if(mediaServer == null)
 				continue;
 			for(DevRecordFile drf:drflist){
@@ -879,8 +874,7 @@ public class ServerAction extends BaseAction {
 			System.out.println("recordStart接收参数:"+param.toString());
 			JSONObject obj = WorkUtil.checkDev(devService, param.optString("DevID", ""), param.optString("DevKey", ""));
 			int result = -1;
-			String url = "";
-			String recordTaskNo = "";
+			String url = "", recordTaskNo = "";
 			String protocol = param.optString("Protocol","");//请求的协议类型
 			if(obj.optInt("code", -1)==0){
 				TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
@@ -1897,6 +1891,17 @@ public class ServerAction extends BaseAction {
 							zcode = mzcode;
 							break;
 						}
+					}else {
+						//更新资源表
+						meetingResource.setUsedAccount(user.getAccount());
+						meetingResource.setUsedTime(Util.dateToStr(new Date()));
+						this.meetingResourceService.update(meetingResource);
+						//更新用户表
+						user.setZcode(mzcode);
+						user.setEmail(meetingResource.getAccount());
+						this.userService.update(user);
+						zcode = mzcode;
+						break;
 					}
 				}
 			}
@@ -2560,6 +2565,9 @@ public class ServerAction extends BaseAction {
 		}
 	}
 	
+	/**
+	 * 获取分享设备的录像文件
+	 */
 	public void getDevRecordList(){
 		LOG.info("Executing operation getDevRecordList");
 		response.setCharacterEncoding("UTF-8");

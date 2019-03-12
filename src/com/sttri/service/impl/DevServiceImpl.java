@@ -17,6 +17,7 @@ import com.sttri.pojo.DevRecord;
 import com.sttri.pojo.DevRecordTime;
 import com.sttri.pojo.MediaServer;
 import com.sttri.pojo.TblDev;
+import com.sttri.service.IDevRecordFileService;
 import com.sttri.service.IDevRecordService;
 import com.sttri.service.IDevRecordTimeService;
 import com.sttri.service.IDevService;
@@ -45,6 +46,8 @@ public class DevServiceImpl implements IDevService {
 	private IDevRecordTimeService devRecordTimeService;
 	@Autowired
 	private IUserQuestionService userQuestionService;
+	@Autowired
+	private IDevRecordFileService devRecordFileService;
 	
 	@Override
 	public void deletebyid(Object id) {
@@ -155,7 +158,7 @@ public class DevServiceImpl implements IDevService {
 		System.out.println(dev.getDevNo()+"的外网直播地址："+url+",内网直播地址："+recordUrl);
 		if(dev.getCompany().getComStoreDays()>0){
 			DevRecord dr = new DevRecord();
-			String id = Util.getUUID(8);
+			String id = Util.getUUID(6);
 			dr.setId(id);
 			dr.setDev(dev);
 			dr.setComId(dev.getCompany().getId());
@@ -211,8 +214,20 @@ public class DevServiceImpl implements IDevService {
 	 */
 	@Override
 	public boolean videoEnd(TblDev dev,String recordTaskNo) {
-		boolean flag = false;
-		MediaServer mediaServer = mediaServerService.getById(dev.getServerId());
+		String drId = dev.getDrId();
+		String currentServerId = dev.getServerId();
+		dev.setServerId("");
+		dev.setDrId("");
+		dev.setOnLines(1);
+		dev.setFullFlag(0);
+		dev.setEditTime(Util.dateToStr(new Date()));
+		update(dev);
+		
+		if("".equals(drId)){
+			return true;
+		}
+		System.out.println(dev.getDevNo()+"停止直播,所在的流媒体服务器："+currentServerId);
+		MediaServer mediaServer = this.mediaServerService.getById(currentServerId);
 		if(mediaServer == null){
 			return true;
 		}
@@ -222,19 +237,8 @@ public class DevServiceImpl implements IDevService {
 		mediaServer.setDevNum(devNum);
 		this.mediaServerService.update(mediaServer);
 		
-		if("".equals(recordTaskNo) || recordTaskNo == null || recordTaskNo == ""){
-			if(!"".equals(dev.getDrId())){
-				recordTaskNo = dev.getDrId();
-			}else {
-				dev.setServerId("");
-				dev.setDrId("");
-				dev.setOnLines(1);
-				dev.setFullFlag(0);
-				dev.setEditTime(Util.dateToStr(new Date()));
-				update(dev);
-				flag = true;
-				return flag;
-			}
+		if("".equals(recordTaskNo) || recordTaskNo == null ){
+			recordTaskNo = drId;
 		}
 		
 		RecordEndThread rethread = new RecordEndThread(devRecordService, recordTaskNo, mediaServer.getRecordWebServiceUrl());
@@ -255,12 +259,6 @@ public class DevServiceImpl implements IDevService {
 			Thread thread2 = new Thread(transCodeThread);
 			thread2.start();
 		}
-		dev.setServerId("");
-		dev.setDrId("");
-		dev.setOnLines(1);
-		dev.setFullFlag(0);
-		dev.setEditTime(Util.dateToStr(new Date()));
-		update(dev);
 		//更新设备直播时长记录
 		try {
 			updateDevRecordTime(dev,recordTaskNo);
@@ -269,8 +267,7 @@ public class DevServiceImpl implements IDevService {
 			e.printStackTrace();
 		}
 		
-		flag = true;
-		return flag;
+		return true;
 	}
 
 	/**

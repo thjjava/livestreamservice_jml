@@ -167,6 +167,8 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 				saveDevLog(dev, 3, dev.getDevNo()+",直播过程中出现网络异常导致中断!");
 				res.setResult(0);
 			}else {
+				//记录日志
+				System.out.println("录像任务编号："+recordId+",直播过程中出现网络异常导致中断,告知服务器失败!");
 				res.setResult(1);
 			}
 		} catch (Exception e) {
@@ -183,18 +185,18 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 	public void saveDevLog(TblDev dev,int logType,String logDesc){
 		DevLog devLog = new DevLog();
 		try {
+			LinkedHashMap<String, String> orderby = new LinkedHashMap<String, String>();
+			orderby.put("addTime", "desc");
+			String clientIP ="", operatorName="";
 			MediaServer server = null;
 			if (dev != null) {
 				String serverId = dev.getServerId();
 				server = this.serverService.getById(serverId);
-			}
-			LinkedHashMap<String, String> orderby = new LinkedHashMap<String, String>();
-			orderby.put("addTime", "desc");
-			String clientIP ="", operatorName="";
-			List<DevLog> dLogs = this.devLogService.getResultList(" o.dev.id=? and o.logType=? ", orderby, new Object[]{dev.getId(),0});
-			if (dLogs !=null && dLogs.size() >0) {
-				clientIP = dLogs.get(0).getClientIP();
-				operatorName = dLogs.get(0).getOperatorName();
+				List<DevLog> dLogs = this.devLogService.getResultList(" o.dev.id=? and o.logType=? ", orderby, new Object[]{dev.getId(),0});
+				if (dLogs !=null && dLogs.size() >0) {
+					clientIP = dLogs.get(0).getClientIP();
+					operatorName = dLogs.get(0).getOperatorName();
+				}
 			}
 			String id = Util.getUUID(6);
 			devLog.setId(id);
