@@ -152,14 +152,14 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 				}
 				//设置该设备录像任务结束
 				DevRecord devRecord = this.devRecordService.getById(recordId);
-				devRecord.setRecordEndTime(Util.dateToStr(new Date()));
+				devRecord.setRecordEndTime(getEndTime(new Date()));
 				devRecord.setRecordStatus(2);
 				this.devRecordService.update(devRecord);
 				//更新设备的在线状态
 				dev.setOnLines(1);
 				dev.setDrId("");
 				dev.setServerId("");
-				dev.setEditTime(Util.dateToStr(new Date()));
+				dev.setEditTime(getEndTime(new Date()));
 				this.devService.update(dev);
 				//更新设备直播时长记录
 				updateDevRecordTime(dev,recordId);
@@ -207,7 +207,7 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 			devLog.setOperatorCode("");
 			devLog.setLogType(logType);
 			devLog.setLogDesc(logDesc);
-			devLog.setAddTime(Util.dateToStr(new Date()));
+			devLog.setAddTime(getEndTime(new Date()));
 			this.devLogService.save(devLog);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -231,12 +231,12 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date startDate=sdf.parse(recordStartTime);
 		    Date endDate=sdf.parse(recordEndTime);
-		    //当前时间减去90秒，减去录像服务等待的时间
-		    Calendar c = Calendar.getInstance();
-		    c.setTime(endDate);
-		    c.add(Calendar.SECOND, -90);
-		    endDate = c.getTime();
-			String timeLen = Util.getDatePoor(endDate, startDate);
+		    recordEndTime = getEndTime(endDate);
+		    int dateDiff = (new Long(Util.datediff(recordStartTime, recordEndTime, "yyyy-MM-dd HH:mm:ss")).intValue())/1000;
+		    String timeLen = "0天0小时0分钟0秒";
+		    if (dateDiff > 0) {
+		    	timeLen = Util.getDatePoor(sdf.parse(recordEndTime), startDate);
+			}
 			devRecordTime.setRecordEndTime(recordEndTime);
 			devRecordTime.setTimeLen(timeLen);
 			devRecordTime.setStatus(0);
@@ -258,6 +258,7 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 				}
 				userQuestion.setTimeLen(liveTimeLen);
 				userQuestion.setScore(score);
+				userQuestion.setAddTime(recordEndTime);
 				this.userQuestionService.update(userQuestion);
 			}
 		}
@@ -285,4 +286,14 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 		}
 		return timeLen;
 	}
+	
+	public String getEndTime(Date nowDate) throws ParseException{
+	    //当前时间减去180秒，减去录像服务等待的时间
+	    Calendar c = Calendar.getInstance();
+	    c.setTime(nowDate);
+	    c.add(Calendar.SECOND, -180);
+	    return Util.dateToStr(c.getTime());
+	}
 }
+
+
