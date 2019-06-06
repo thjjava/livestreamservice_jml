@@ -420,7 +420,6 @@ public class ServerAction extends BaseAction {
 		if(gList != null && gList.size()>0){
 			for (CompanyGroup companyGroup : gList) {
 				String gid = companyGroup.getId();
-				array.add(gid);
 				getArray(gid,array);//递归查询gid该节点的子节点
 			}
 		}
