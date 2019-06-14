@@ -6,8 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -2363,25 +2365,29 @@ public class ServerAction extends BaseAction {
 	
 	/**
 	 * 查询自评问题
-	 * type:请求的类型  0-固定查询几条记录 1-随机查询几条记录
 	 */
 	public void queryQuestion(){
 		LOG.info("Executing operation queryQuestion");
 		response.setCharacterEncoding("UTf-8");
-		int type = Integer.parseInt(Util.dealNull(request.getParameter("type")));
+		String devNo = Util.dealNull(request.getParameter("devNo"));
+		String devKey = Util.dealNull(request.getParameter("devKey"));
 		try {
+			JSONObject obj = WorkUtil.checkDev(devService, devNo, devKey);
+			if(obj.optInt("code", -2)!=0){
+				JsonUtil.jsonString(response, obj.toString());
+				return;
+			}
+			TblDev dev = (TblDev) JSONObject.toBean(obj.optJSONObject("dev"), TblDev.class);
+			obj.remove("dev");
 			JSONObject ob = new JSONObject();
+			List<TblQuestion> questions = this.questionService.getResultList(" o.comId=? and o.status=?", null, new Object[] {dev.getCompany().getId(),0});
+			Map<String, String> map = new HashMap<String, String>();
+			for(TblQuestion question : questions) {
+				map.put(question.getAnswerNo(), question.getQuestion());
+			}
 			ob.put("code", 0);
 			ob.put("desc", "查询成功!");
-			if (type == 1) {
-				String hql = "select o from TblQuestion o order by rand()";
-				List<TblQuestion> list = this.questionService.getRandResultList(hql, 0, 5);
-				ob.put("questions", JSONArray.fromObject(list));
-			}else {
-				String hql = "select o from TblQuestion o ";
-				List<TblQuestion> list = this.questionService.getRandResultList(hql, 0, 5);
-				ob.put("questions", JSONArray.fromObject(list));
-			}
+			ob.put("question", map);
 			System.out.println(ob.toString());
 			JsonUtil.jsonString(response, ob.toString());
 		} catch (Exception e) {
