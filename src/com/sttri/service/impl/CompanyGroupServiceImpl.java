@@ -21,4 +21,9 @@ public class CompanyGroupServiceImpl implements ICompanyGroupService {
 		return dao.getResultList(CompanyGroup.class, wherejpql, orderby, queryParams);
 	}
 
+	@Override
+	public void save(CompanyGroup group) {
+		dao.save(group);
+	}
+
 }

@@ -129,5 +129,5 @@ public class Company implements java.io.Serializable {
 	public void setLicense(String license) {
 		this.license = license;
 	}
-
+	
 }

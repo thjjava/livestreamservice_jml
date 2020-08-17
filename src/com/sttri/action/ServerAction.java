@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,18 +21,10 @@ import org.apache.cxf.common.util.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
-
-
-
-
-
-
-
-
 import com.sttri.bean.PageView;
 import com.sttri.bean.QueryResult;
 import com.sttri.pojo.CompanyGroup;
@@ -89,7 +80,7 @@ import com.sttri.util.Util;
 import com.sttri.util.WorkUtil;
 
 public class ServerAction extends BaseAction {
-	private static final Logger LOG = Logger.getLogger(ServerAction.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(ServerAction.class);
 	private static final long serialVersionUID = 1L;
 	
 	@Autowired
@@ -889,6 +880,7 @@ public class ServerAction extends BaseAction {
 				
 				String clientIP = getIpAddr(request);
 				saveDevLog(dev, clientIP,0, dev.getDevNo()+",开始直播!");//保存日志
+				
 			}
 			
 			Document doc = DocumentHelper.createDocument();
@@ -938,6 +930,7 @@ public class ServerAction extends BaseAction {
 				//保存日志
 				String clientIP = getIpAddr(this.request);
 				saveDevLog(dev, clientIP, 1, logDesc);
+				
 			}
 
 			Document doc = DocumentHelper.createDocument();
@@ -1768,6 +1761,7 @@ public class ServerAction extends BaseAction {
 		obj = MeetingApiUtil.createMeetingRoom(zcode, topic, Integer.parseInt(meetingType), meetingPwd, startTime);
 		System.out.println("**创建会议结果是否为null**："+obj.get("code"));
 		if (obj.get("code")!=null ) {
+			System.out.println("**创建会议失败信息**:"+obj.getString("msg"));
 			ob.put("code", 7);
 			ob.put("desc", "会易通服务出现异常，会议创建失败!");
 			JsonUtil.jsonString(response, ob.toString());

@@ -215,6 +215,10 @@ public class DevServiceImpl implements IDevService {
 	@Override
 	public boolean videoEnd(TblDev dev,String recordTaskNo) {
 		String drId = dev.getDrId();
+		if("".equals(drId)){
+			return true;
+		}
+		
 		String currentServerId = dev.getServerId();
 		dev.setServerId("");
 		dev.setDrId("");
@@ -223,9 +227,6 @@ public class DevServiceImpl implements IDevService {
 		dev.setEditTime(Util.dateToStr(new Date()));
 		update(dev);
 		
-		if("".equals(drId)){
-			return true;
-		}
 		System.out.println(dev.getDevNo()+"停止直播,所在的流媒体服务器："+currentServerId);
 		MediaServer mediaServer = this.mediaServerService.getById(currentServerId);
 		if(mediaServer == null){
@@ -293,6 +294,7 @@ public class DevServiceImpl implements IDevService {
 	 * @throws ParseException 
 	 */
 	public void updateDevRecordTime(TblDev dev,String recordTaskNo) throws ParseException{
+		System.out.println(dev.getDevNo()+"停止直播,更新直播时长,drId="+dev.getDrId()+",recordTaskNo="+recordTaskNo);
 		List<DevRecordTime> list = this.devRecordTimeService.getResultList(" o.dev.id=? and o.status=? and o.recordTaskNo=? ", null, new Object[]{dev.getId(),1,recordTaskNo});
 		if (list != null && list.size() > 0) {
 			DevRecordTime devRecordTime = list.get(0);

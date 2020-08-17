@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC
-    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
-    "http://struts.apache.org/dtds/struts-2.3.dtd">
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
 	<constant name="struts.action.extension" value="do" />
@@ -14,6 +14,7 @@
 	<constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
 	
 	<package name="json" namespace="/" extends="json-default">
+		<global-allowed-methods>regex:.*</global-allowed-methods>
 		
         <action name="server_*" class="com.sttri.action.ServerAction" method="{1}">
             <result name="success" type="json">
@@ -22,6 +23,11 @@
         </action>
         
         <action name="mobile_*" class="com.sttri.action.MobileServerAction" method="{1}">
+            <result name="success" type="json">
+				<param name="includeProperties"/>
+			</result>
+        </action>
+        <action name="vep_*" class="com.sttri.action.VepAction" method="{1}">
             <result name="success" type="json">
 				<param name="includeProperties"/>
 			</result>

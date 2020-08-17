@@ -14,13 +14,26 @@
            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd" default-autowire="byName">
 	
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	<!-- <import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> -->
 	
-	<bean id="VauServicesBean" class="cn.sh.yeshine.ns1vauservices.VauServicesPortTypeImpl"></bean>
+	
+	<jaxws:endpoint   
+        id="VauServices"  
+        implementor="cn.sh.yeshine.ns1vauservices.VauServicesPortTypeImpl"  
+        address="/VauServices">  
+    </jaxws:endpoint>  
+    
+    <jaxws:endpoint 
+    	id="RecordServices" 
+    	implementor="cn.sh.sttri.ns1recordservices.RecordServicesPortTypeImpl" 
+    	address="/RecordServices">
+    </jaxws:endpoint>
+    
+	<!-- <bean id="VauServicesBean" class="cn.sh.yeshine.ns1vauservices.VauServicesPortTypeImpl"></bean>
 	<jaxws:endpoint id="VauServices" implementor="#VauServicesBean" address="/VauServices"></jaxws:endpoint>
 	
 	<bean id="RecordServicesBean" class="cn.sh.sttri.ns1recordservices.RecordServicesPortTypeImpl"></bean>
-	<jaxws:endpoint id="RecordServices" implementor="#RecordServicesBean" address="/RecordServices"></jaxws:endpoint>
+	<jaxws:endpoint id="RecordServices" implementor="#RecordServicesBean" address="/RecordServices"></jaxws:endpoint> -->
 	
 	<bean id="dao" class="com.sttri.dao.impl.CommonDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />

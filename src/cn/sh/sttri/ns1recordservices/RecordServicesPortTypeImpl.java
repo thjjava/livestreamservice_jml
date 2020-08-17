@@ -207,7 +207,7 @@ public class RecordServicesPortTypeImpl implements RecordServicesPortType {
 			devLog.setOperatorCode("");
 			devLog.setLogType(logType);
 			devLog.setLogDesc(logDesc);
-			devLog.setAddTime(getEndTime(new Date()));
+			devLog.setAddTime(Util.dateToStr(new Date()));
 			this.devLogService.save(devLog);
 		} catch (Exception e) {
 			// TODO: handle exception

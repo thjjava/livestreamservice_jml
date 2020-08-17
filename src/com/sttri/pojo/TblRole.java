@@ -13,8 +13,10 @@ public class TblRole implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String roleName;
+	private Integer roleType;
 	private String remark;
 	private String addTime;
+	private String comId;
 	
 	public TblRole() {
 	}
@@ -37,6 +39,15 @@ public class TblRole implements java.io.Serializable {
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
+	
+	@Column(name = "RoleType")
+	public Integer getRoleType() {
+		return this.roleType;
+	}
+
+	public void setRoleType(Integer roleType) {
+		this.roleType = roleType;
+	}
 
 	@Column(name = "Remark", length = 100)
 	public String getRemark() {
@@ -56,4 +67,12 @@ public class TblRole implements java.io.Serializable {
 		this.addTime = addTime;
 	}
 
+	@Column(name = "ComId", length = 50)
+	public String getComId() {
+		return this.comId;
+	}
+
+	public void setComId(String comId) {
+		this.comId = comId;
+	}
 }
