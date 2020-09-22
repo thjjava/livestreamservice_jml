@@ -17,6 +17,7 @@ import com.sttri.pojo.DevRecord;
 import com.sttri.pojo.DevRecordTime;
 import com.sttri.pojo.MediaServer;
 import com.sttri.pojo.TblDev;
+import com.sttri.pojo.UserQuestion;
 import com.sttri.service.IDevRecordFileService;
 import com.sttri.service.IDevRecordService;
 import com.sttri.service.IDevRecordTimeService;
@@ -309,7 +310,50 @@ public class DevServiceImpl implements IDevService {
 			devRecordTime.setTimeLen(timeLen);
 			devRecordTime.setStatus(0);
 			this.devRecordTimeService.update(devRecordTime);
+			//重新更新晨会质量表里该设备的直播时长
+			String date = recordStartTime.substring(0,10);
+			//查询date日期提交的问卷记录
+			List<UserQuestion> uList = this.userQuestionService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+			if (uList != null && uList.size() >0) {
+				UserQuestion userQuestion = uList.get(0);
+				int score = userQuestion.getScore();
+				int hasdTimeLen = userQuestion.getTimeLen();
+				//查询date日期所有录像任务数据
+				List<DevRecordTime> drt = this.devRecordTimeService.getResultList(" o.dev.id=? and o.addTime like ?", null, new Object[]{dev.getId(),date+"%"});
+				int liveTimeLen = getTimeLen(drt);
+				//开会时长大于等于15分钟算1分,当该设备的以前统计的时长小于15分钟，并且总时长大于等于15分钟了，则分数+1
+				if (hasdTimeLen < (15*60) && liveTimeLen >= (15*60)) {
+					score += 1;
+				}
+				userQuestion.setTimeLen(liveTimeLen);
+				userQuestion.setScore(score);
+				userQuestion.setAddTime(recordEndTime);
+				this.userQuestionService.update(userQuestion);
+			}
 		}
+	}
+	
+	/**
+	 * 时间字符串转化为具体秒数，recordTime="0天0小时10分钟31秒"
+	 * @param list
+	 * @return 
+	 */
+	public int getTimeLen(List<DevRecordTime> list){
+		int timeLen =0;
+		if (list != null && list.size() > 0) {
+			for (DevRecordTime devRecordTime : list) {
+				String recordTime = devRecordTime.getTimeLen();
+				String[] s1 = recordTime.split("天");
+				timeLen += Integer.parseInt(s1[0])*24*60*60;//天->秒
+				String[] s2 = s1[1].split("小时");
+				timeLen += Integer.parseInt(s2[0])*60*60;//小时->秒
+				String[] s3 = s2[1].split("分钟");
+				timeLen += Integer.parseInt(s3[0])*60;//分钟->秒
+				String[] s4 = s3[1].split("秒");
+				timeLen += Integer.parseInt(s4[0]);
+			}
+		}
+		return timeLen;
 	}
 	
 }
