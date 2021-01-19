@@ -1,18 +1,26 @@
 package com.sttri.dao.impl;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sttri.bean.QueryResult;
 import com.sttri.dao.CommonDao;
+import com.sttri.pojo.CompanyGroup;
 
 public class CommonDaoImpl extends HibernateDaoSupport implements CommonDao{
 	public void clear(){
@@ -247,5 +255,33 @@ public class CommonDaoImpl extends HibernateDaoSupport implements CommonDao{
 		query.setFirstResult(firstResult);
 		query.setMaxResults(maxResult);
 		return query.list();
+	}
+	
+	@SuppressWarnings({ "unchecked", "deprecation", "rawtypes" })
+	public <T> List<T> getLocalSql(String sql){
+		final String fsql=sql;
+		List<T> query = (List<T>)this.getHibernateTemplate().execute(new HibernateCallback(){ 
+			public Object doInHibernate(Session session)throws HibernateException, SQLException {
+            	 Connection con = session.connection();   
+	             PreparedStatement ps = con.prepareStatement(fsql);   
+	             ResultSet rs = ps.executeQuery(); 
+	             List<CompanyGroup> all = new ArrayList<CompanyGroup>();  
+	             while(rs.next()){
+	            	 CompanyGroup group=new CompanyGroup();
+	            	 group.setId(rs.getString("id"));
+	            	 group.setComId(rs.getString("comId"));
+	            	 group.setGroupName(rs.getString("groupName"));
+	            	 group.setPid(rs.getString("pId"));
+	            	 group.setAddTime(rs.getString("addTime"));
+	            	 all.add(group);
+                }   
+                rs.close();   
+                ps.close();   
+                session.flush();   
+                session.close();      
+                return all;
+            }   
+	     });
+		return query;
 	}
 }

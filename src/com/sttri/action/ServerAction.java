@@ -17,7 +17,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.xml.XMLSerializer;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -351,14 +351,9 @@ public class ServerAction extends BaseAction {
 				 * 更新内容：判断组织ID参数是否为空，如果为空，就直接返回客户端设备的状态，如果不为空，则返回客户端设备的在线状态和组织下的设备统计
 				 */
 				if ("".equals(groups)) {
-//					String d2 = Util.dateToStr(new Date());
 					for(int i=0;i<array.size();i++){
 						ob = array.getJSONObject(i);
 						dev = devService.getById(ob.get("id"));
-						/*if(WorkUtil.isTimeout(dev.getLastLoginTime(), d2, 3600)){
-							dev.setOnLines(1);
-							devService.update(dev);
-						}*/
 						int online = dev == null?1:dev.getOnLines();
 						ob.put("onLine", online);
 						array.set(i, ob);
@@ -366,14 +361,9 @@ public class ServerAction extends BaseAction {
 					JsonUtil.jsonString(response, array.toString());
 				}else {
 					//设备在线状态
-//					String d2 = Util.dateToStr(new Date());
 					for(int i=0;i<array.size();i++){
 						ob = array.getJSONObject(i);
 						dev = devService.getById(ob.get("id"));
-						/*if(WorkUtil.isTimeout(dev.getLastLoginTime(), d2, 3600)){
-							dev.setOnLines(1);
-							devService.update(dev);
-						}*/
 						int online = dev == null?1:dev.getOnLines();
 						ob.put("onLine", online);
 						array.set(i, ob);
@@ -409,7 +399,9 @@ public class ServerAction extends BaseAction {
 	public JSONArray getArray(String id,JSONArray array){
 		array.add(id);
 		//查询组织表中，该ID的根节点下的所有子节点
-		List<CompanyGroup> gList = this.groupService.getResultList(" o.pid=?", null, id);
+		String sql = "select * from company_group where pid='"+id+"' order by convert(groupName USING GBK) ";
+		List<CompanyGroup> gList = this.groupService.getLocalSql(sql);
+//		List<CompanyGroup> gList = this.groupService.getResultList(" o.pid=?", null, id);
 		if(gList != null && gList.size()>0){
 			for (CompanyGroup companyGroup : gList) {
 				String gid = companyGroup.getId();
@@ -423,27 +415,23 @@ public class ServerAction extends BaseAction {
 	 * pc获取分组
 	 * @return
 	 */
-	public String group(){
-		LOG.info("Executing operation group");
+	public void group(){
 		response.setCharacterEncoding("UTF-8");
 		String account = Util.dealNull(request.getParameter("account"));
 		String pwd = Util.dealNull(request.getParameter("pwd"));
-		LOG.info(account+" group on "+ Util.dateToStr(new Date()));
+		LOG.info("Executing operation group,account:{},request time:{}",account,Util.dateToStr(new Date()));
 		
 		JSONObject obj = WorkUtil.checkUser(userService, account, pwd);
 		if(obj.optInt("code",-1)!=0){
 			JsonUtil.jsonString(response, "[]");
-			return null;
+			return;
 		}
-		
 		TblUser user = (TblUser)JSONObject.toBean(obj.optJSONObject("user"), TblUser.class);
 		String groupId = Util.dealNull(request.getParameter("groupId"));
 		List<Object> param = new ArrayList<Object>();
 		String where = "o.company.id=? ";
 		param.add(user.getCompany().getId());
-		if(groupId.equals("")){
-			groupId = "0";
-		}
+		
 		if(groupId.equals("0")){
 			where += "and (o.groupId is null or o.groupId='')";
 		}else{
@@ -453,14 +441,11 @@ public class ServerAction extends BaseAction {
 		
 		JSONArray array = new JSONArray();
 		JSONObject ob = null;
-//		String d2 = Util.dateToStr(new Date());
-		List<TblDev> devlist = devService.getResultList(where, null, param.toArray());
+		LinkedHashMap<String,String> orderby = new LinkedHashMap<String,String>();
+		orderby.put("onLines", "asc");
+		List<TblDev> devlist = devService.getResultList(where, orderby, param.toArray());
 		for(TblDev dev:devlist){
 			ob = new JSONObject();
-			/*if(WorkUtil.isTimeout(dev.getLastLoginTime(), d2, 3600)){
-				dev.setOnLines(1);
-				devService.update(dev);
-			}*/
 			ob.put("id", dev.getId());
 			ob.put("name", dev.getDevName());
 			ob.put("devNo", dev.getDevNo());
@@ -470,10 +455,10 @@ public class ServerAction extends BaseAction {
 		}
 		
 		JSONArray gArray = null;
-		if(groupId.equals("0")){
+		if("0".equals(groupId)){
 			//获取节点下所有的设备数和在线设备数
 			gArray = new JSONArray();
-			gArray = getArray(groupId, gArray);
+			gArray = getArray(user.getGroupId(), gArray);
 			String jpqlStr = gArray.toString().replace("[", "(").replace("]", ")").replaceAll("\"", "'");
 			List<TblDev> total = this.devService.getResultList(" o.company.id=? and o.groupId in "+jpqlStr, null,new Object[]{ user.getCompany().getId()});
 			List<TblDev> onLine = this.devService.getResultList(" o.company.id=? and o.onLines=? and o.groupId in "+jpqlStr, null,new Object[]{ user.getCompany().getId(),0});
@@ -491,8 +476,10 @@ public class ServerAction extends BaseAction {
 				array.add(ob);
 			}
 		}else{
-			List<CompanyGroup> gplist = groupService.getResultList("o.pid=?", null, groupId);
-			for(CompanyGroup g:gplist){
+			String sql = "select * from company_group where pid='"+groupId+"' order by convert(groupName USING GBK) ";
+			List<CompanyGroup> gplist = this.groupService.getLocalSql(sql);
+//			List<CompanyGroup> gplist = groupService.getResultList("o.pid=?", null, groupId);
+			for(CompanyGroup g : gplist){
 				ob = new JSONObject();
 				ob.put("id", g.getId());
 				ob.put("name", g.getGroupName());
@@ -512,7 +499,6 @@ public class ServerAction extends BaseAction {
 		}
 		System.out.println(array.toString());
 		JsonUtil.jsonString(response, array.toString());
-		return null;
 	}
 	
 	/**

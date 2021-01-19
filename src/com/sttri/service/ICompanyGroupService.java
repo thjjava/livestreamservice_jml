@@ -17,4 +17,6 @@ public interface ICompanyGroupService {
 	
 	
 	public void save(CompanyGroup group);
+	
+	public List<CompanyGroup> getLocalSql(String wherejpql);
 }
